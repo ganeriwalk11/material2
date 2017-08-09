@@ -45,9 +45,12 @@ export class MatListDivider {}
 /** A Material Design list component. */
 @Component({
   moduleId: module.id,
-  selector: 'mat-list, mat-nav-list',
   exportAs: 'matList, matNavList',
-  host: {'role': 'list'},
+  selector: 'mat-nav-list',
+  host: {
+    'role': 'navigation',
+    'class': 'mat-nav-list'
+  },
   template: '<ng-content></ng-content>',
   styleUrls: ['list.css'],
   inputs: ['disableRipple'],
@@ -55,27 +58,20 @@ export class MatListDivider {}
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatList extends _MatListMixinBase implements CanDisableRipple {}
+export class MdNavList extends _MdListMixinBase implements CanDisableRipple {}
 
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
+@Component({
+  moduleId: module.id,
   selector: 'mat-list',
-  host: {'class': 'mat-list'}
+  template: '<ng-content></ng-content>',
+  host: {'class': 'mat-list'},
+  styleUrls: ['list.css'],
+  inputs: ['disableRipple'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatListCssMatStyler {}
-
-/**
- * Directive whose purpose is to add the mat- CSS styling to this selector.
- * @docs-private
- */
-@Directive({
-  selector: 'mat-nav-list',
-  host: {'class': 'mat-nav-list'}
-})
-export class MatNavListCssMatStyler {}
+export class MdList extends _MdListMixinBase implements CanDisableRipple {}
+>>>>>>> bbe53646f... demo(list): Add accessibility demo page for list
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
@@ -153,9 +149,9 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   constructor(private _renderer: Renderer2,
               private _element: ElementRef,
               @Optional() private _list: MatList,
-              @Optional() navList: MatNavListCssMatStyler) {
+              @Optional() private _navList: MatNavList) {
     super();
-    this._isNavList = !!navList;
+    this._isNavList = !!_navList;
   }
 
   ngAfterContentInit() {
