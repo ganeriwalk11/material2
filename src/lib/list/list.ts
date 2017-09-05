@@ -148,7 +148,6 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
 
   constructor(private _renderer: Renderer2,
               private _element: ElementRef,
-              @Optional() private _list: MatList,
               @Optional() private _navList: MatNavList) {
     super();
     this._isNavList = !!_navList;
@@ -160,7 +159,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
 
   /** Whether this list item should show a ripple effect when clicked.  */
   _isRippleDisabled() {
-    return !this._isNavList || this.disableRipple || this._list.disableRipple;
+    return !this._isNavList || this.disableRipple || this._navList.disableRipple;
   }
 
   _handleFocus() {
