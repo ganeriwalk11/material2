@@ -58,7 +58,7 @@ export class MatListDivider {}
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MdNavList extends _MdListMixinBase implements CanDisableRipple {}
+export class MatNavList extends _MatListMixinBase implements CanDisableRipple {}
 
 @Component({
   moduleId: module.id,
@@ -69,9 +69,9 @@ export class MdNavList extends _MdListMixinBase implements CanDisableRipple {}
   inputs: ['disableRipple'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  preserveWhitespaces: false,
 })
-export class MdList extends _MdListMixinBase implements CanDisableRipple {}
->>>>>>> bbe53646f... demo(list): Add accessibility demo page for list
+export class MatList extends _MatListMixinBase implements CanDisableRipple {}
 
 /**
  * Directive whose purpose is to add the mat- CSS styling to this selector.
