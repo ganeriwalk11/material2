@@ -1,0 +1,30 @@
+
+<div class="tree-container mat-elevation-z4">
+
+
+  <cdk-tree #tree [dataSource]="dataSource" [treeControl]="treeControl">
+    <!-- Row templates. The columns used are set at the row template level -->
+    <cdk-node *cdkNodeDef="let node" [cdkNode]="node" (click)="currentNode=node">
+      <mat-nested-tree-node [node]="node" [selection]="selection">
+      </mat-nested-tree-node>
+
+
+
+    </cdk-node>
+  </cdk-tree>
+</div>
+
+
+<!--<mat-card *ngIf="!!currentNode">-->
+<!--<mat-card-title>Add child node</mat-card-title>-->
+<!--<mat-input-container>-->
+<!--<input matInput [(ngModel)]="key" placeholder="Key"/>-->
+<!--</mat-input-container>-->
+<!--<mat-input-container>-->
+<!--<input matInput [(ngModel)]="value" placeholder="Value"/>-->
+<!--</mat-input-container>-->
+<!--<span> {{currentNode.key}} </span>-->
+<!--<button mat-button (click)="addChild()">Add Child</button>-->
+<!--</mat-card>-->
+
+<!--<button mat-button (click)="printNodes()"> PrintNodes</button>-->

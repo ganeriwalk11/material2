@@ -38,6 +38,7 @@ import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
 import {StepperDemo} from '../stepper/stepper-demo';
 import {PeopleDatabase} from '../table/people-database';
 import {TableDemo} from '../table/table-demo';
+import {TreeDemo} from '../tree/tree-demo';
 import {ScreenTypeDemo} from '../screen-type/screen-type-demo';
 import {LayoutModule} from '@angular/cdk/layout';
 import {TableHeaderDemo} from '../table/table-header-demo';
@@ -108,6 +109,7 @@ import {DEMO_APP_ROUTES} from './routes';
     TabsDemo,
     ToolbarDemo,
     TooltipDemo,
+    TreeDemo,
     TypographyDemo,
   ],
   providers: [

@@ -35,6 +35,7 @@ export * from '@angular/material/snack-bar';
 export * from '@angular/material/sort';
 export * from '@angular/material/stepper';
 export * from '@angular/material/table';
+export * from '@angular/material/tree';
 export * from '@angular/material/tabs';
 export * from '@angular/material/toolbar';
 export * from '@angular/material/tooltip';
