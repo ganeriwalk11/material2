@@ -55,6 +55,7 @@ export class MatFlatTree implements OnInit, AfterViewInit {
 
   submit() {
     try {
+      console.log(this.data);
       let obj = JSON.parse(this.data);
       this.dataSource.data = obj;
     } catch (e) {

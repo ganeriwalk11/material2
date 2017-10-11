@@ -12,15 +12,15 @@
           <div *ngFor="let a of createArray(node.parentMap.length); let index = index" [class.special]="node.parentMap[index]"></div>
         </div>
         <div class="expand-trigger">
-          <a mat-icon-button (click)="treeControl.toggleDecedents(node)" *ngIf="node.expandable">
-            <mat-icon>{{ treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>
-          </a>
+          <!--<a mat-icon-button (click)="treeControl.toggleDecedents(node)" *ngIf="node.expandable">-->
+            <!--<mat-icon>{{ treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>-->
+          <!--</a>-->
         </div>
-
-        <mat-checkbox (click)="$event.stopPropagation()"
-                     (change)="selectNode(node, $event)"
-                     [checked]="selection.isSelected(node)">
-          {{node.key}}<span *ngIf="node.value">: {{node.value}}</span> </mat-checkbox>
+            {{node.key}} {{node.value}}
+        <!--<mat-checkbox (click)="$event.stopPropagation()"-->
+                     <!--(change)="selectNode(node, $event)"-->
+                     <!--[checked]="selection.isSelected(node)">-->
+          <!--{{node.key}}<span *ngIf="node.value">: {{node.value}}</span> </mat-checkbox>-->
       </div>
 
     </cdk-node>

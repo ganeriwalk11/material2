@@ -5,6 +5,8 @@
   <cdk-tree #tree [dataSource]="dataSource" [treeControl]="treeControl">
     <!-- Row templates. The columns used are set at the row template level -->
     <cdk-node *cdkNodeDef="let node" [cdkNode]="node" (click)="currentNode=node">
+
+      this node {{node}} -- this node
       <mat-nested-tree-node [node]="node" [selection]="selection">
       </mat-nested-tree-node>
 

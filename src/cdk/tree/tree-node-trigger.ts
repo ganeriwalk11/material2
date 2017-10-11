@@ -21,7 +21,6 @@ import {CdkTree} from './tree';
 @Directive({
   selector: '[cdkNodeTrigger]',
   host: {
-    'class': 'mat-node-trigger',
     '(click)': 'trigger($event)',
   }
 })
@@ -30,8 +29,7 @@ export class CdkNodeTrigger {
   @Input('cdkNodeTriggerRecursive') recursive: boolean = false;
   @Input('cdkNodeTriggerSelection') selection: SelectionModel<any>;
 
-  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree) {
-  }
+  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree) {}
 
   trigger(_: Event) {
     this.selection.toggle(this.node);

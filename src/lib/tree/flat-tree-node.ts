@@ -23,11 +23,11 @@ export class MatFlatTreeNode implements OnDestroy, AfterViewInit {
   get treeControl(): TreeControl { return this.tree.treeControl; }
 
   ngAfterViewInit() {
-    if (this.selection.onChange) {
-      this._selectSubscription = this.selection.onChange.subscribe(() => {
-        this.changeDetectorRef.markForCheck();
-      });
-    }
+    // if (this.selection.onChange) {
+    //   this._selectSubscription = this.selection.onChange.subscribe(() => {
+    //     this.changeDetectorRef.markForCheck();
+    //   });
+    // }
 
   }
 

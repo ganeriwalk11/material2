@@ -13,7 +13,7 @@ import {MatNestedTree} from './nested-tree';
 import {MatNestedTreeNode} from './nested-tree-node';
 import {CdkTreeModule} from '@angular/cdk/tree';
 import {CommonModule} from '@angular/common';
-import {MdCommonModule} from '@angular/material/core';
+import {MatCommonModule} from '@angular/material/core';
 
 export * from './flat-tree';
 export * from './flat-tree-node';
@@ -23,7 +23,7 @@ export * from './flat-data-source';
 export * from './nested-data-source';
 
 @NgModule({
-  imports: [CdkTreeModule, CommonModule, MdCommonModule],
+  imports: [CdkTreeModule, CommonModule, MatCommonModule],
   exports: [MatFlatTree, MatFlatTreeNode, MatNestedTree, MatNestedTreeNode],
   declarations: [MatFlatTree, MatFlatTreeNode, MatNestedTree, MatNestedTreeNode]
 })

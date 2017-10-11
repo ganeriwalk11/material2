@@ -23,6 +23,8 @@ export class MatNestedTreeNode {
   _subscription: Subscription;
 
   ngOnInit() {
+    console.log(`mat nested tree node this.node`)
+    console.log(this.node);
     this._subscription = this.treeControl.expandChange.subscribe(() => {
       this.detectorRef.detectChanges();
     })

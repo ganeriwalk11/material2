@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-es5",
   "files": [
     "public-api.ts",
     "../typings.d.ts"

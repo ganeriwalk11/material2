@@ -7,6 +7,7 @@
  */
 import {
   AfterContentInit,
+  AfterViewInit,
   ChangeDetectorRef,
   ContentChildren,
   Directive,
@@ -29,23 +30,26 @@ import {CdkNodePlaceholder} from './tree-node-placeholder';
 @Directive({
   selector: '[cdkNestedNode]'
 })
-export class CdkNestedNode implements AfterContentInit, OnDestroy {
+export class CdkNestedNode implements AfterContentInit, AfterViewInit, OnDestroy {
   @Input('cdkNestedNode') node: NestedNode;
 
   @ContentChildren(CdkNodePlaceholder) nodePlaceholder: QueryList<CdkNodePlaceholder>;
 
   _childrenSubscription: Subscription;
+  _treeControlSubscription: Subscription;
 
   constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree,
-              public changeDetectorRef: ChangeDetectorRef) {}
+              private _changeDetectorRef: ChangeDetectorRef) {}
 
   viewContainer: ViewContainerRef;
 
   ngAfterViewInit() {
-    // this.tree.treeControl.expandChange.subscribe(() => this.changeDetectorRef.detectChanges());
+    this._treeControlSubscription =
+        this.tree.treeControl.expandChange.subscribe(() => this._changeDetectorRef.detectChanges());
   }
 
   ngAfterContentInit() {
+    // TODO (tinagao): Decide the correct time and place to add children
     this._childrenSubscription =
       combineLatest([this.node.getChildren(), this.nodePlaceholder.changes])
         .subscribe((results) => {
@@ -53,30 +57,36 @@ export class CdkNestedNode implements AfterContentInit, OnDestroy {
         });
   }
 
-  _addChildrenNodes(children: NestedNode[]) {
-    if (this.nodePlaceholder.length) {
-      this.viewContainer = this.nodePlaceholder.first.viewContainer;
-      this.viewContainer.clear();
-      if (children) {
-        children.forEach((child, index) => {
-          this.tree.addNode(this.viewContainer, child, index);
-        });
-
-      }
-    } else {
-      this.clear();
-    }
-    this.changeDetectorRef.detectChanges();
-  }
-
   ngOnDestroy() {
     if (this._childrenSubscription) {
       this._childrenSubscription.unsubscribe();
     }
-    this.clear();
+    if (this._treeControlSubscription) {
+      this._treeControlSubscription.unsubscribe();
+    }
+    this._clear();
   }
 
-  clear() {
+  _addChildrenNodes(children: NestedNode[]) {
+    if (this.nodePlaceholder.length) {
+      this.viewContainer = this.nodePlaceholder.first.viewContainer;
+      this.viewContainer.clear();
+      if (children.length) {
+        children.forEach((child, index) => {
+          this.tree.addNode(this.viewContainer, child, index);
+        });
+      } else {
+        this._clear();
+      }
+    } else {
+      this._clear();
+    }
+    this._changeDetectorRef.detectChanges();
+  }
+
+
+
+  _clear() {
     if (this.viewContainer) {
       this.viewContainer.clear();
     }
