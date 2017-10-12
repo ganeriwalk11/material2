@@ -8,6 +8,7 @@
 import {SelectionModel} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {FlatNode, NestedNode} from './tree-node-data';
+import {CdkTreeNode} from './tree-node';
 
 /**
  * Tree control interface
@@ -17,8 +18,13 @@ export interface TreeControl {
   /** The expansion change event */
   expandChange: BehaviorSubject<any>;
 
+  expansionModel: SelectionModel<any>;
+
   /** Get all decedents of a node */
   getDecedents(node: any);
+
+  /** Expand or collapse node */
+  toggle(node: any);
 
   /** Expand one node */
   expand(node: any);
@@ -53,8 +59,15 @@ export class FlatTreeControl<T extends FlatNode> implements TreeControl {
 
   /** Expansion Statues */
   set expansionModel(model: SelectionModel<T>) {
-    this._expansionModel = model;
+    if (this._expansionModel != null && this._expansionModel.onChange != null) {
+      this._expansionModel.onChange.unsubscribe();
+      this._expansionModel = model;
+      if (this._expansionModel && this._expansionModel.onChange) {
+        this._expansionModel.onChange.subscribe((_) => this.expandChange.next(this.expansionModel.selected));
+      }
+    }
   }
+  get expansionModel() { return this._expansionModel; }
   _expansionModel = new SelectionModel<T>(true);
 
   toggle(node: T) {
@@ -100,21 +113,27 @@ export class FlatTreeControl<T extends FlatNode> implements TreeControl {
   }
 
   expandDecedents(node: T) {
+    console.log(`expand decedents ${node}`);
     let decedents = this.getDecedents(node);
     decedents.forEach((child) => child.expandable && this._expansionModel.select(child));
     this.expandChange.next(this._expansionModel.selected);
+    console.log(this.expansionModel.selected);
   }
 
   collapseDecedents(node: T) {
+    console.log(`collapse decedents ${node}`);
     let decedents = this.getDecedents(node);
     decedents.forEach((child) => this._expansionModel.deselect(child));
     this.expandChange.next(this._expansionModel.selected);
+    console.log(this.expansionModel.selected);
   }
 
   toggleDecedents(node: T) {
+    console.log(`toggle decedents ${node}`);
     this._expansionModel.toggle(node);
     let expand = this._expansionModel.isSelected(node);
     expand ? this.expandDecedents(node) : this.collapseDecedents(node);
+    console.log(this.expansionModel.selected);
   }
 }
 

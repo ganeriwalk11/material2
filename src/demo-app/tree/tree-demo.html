@@ -1,23 +1,23 @@
-<mat-flat-tree [data]="data">
-  <mat-flat-tree-node>
-    <div class="row">
-      <div class="space">
-        <!--<div *ngFor="let a of createArray(node.parentMap.length); let index = index" [class.special]="node.parentMap[index]"></div>-->
-      </div>
-      <div style="width: 40px; display: inline-block">
-        <!--<a mat-icon-button (click)="treeControl.toggleDecedents(node)" *ngIf="node.expandable">-->
-        <!--<mat-icon>{{ treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>-->
-        <!--</a>-->
-      </div>
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <mat-tree-node *cdkNodeDef="let node" [cdkNode]="node">
+    <!--<div matNodePadding>1231212</div>-->
+    <!--<a mat-icon-button cdkNodeTrigger *ngIf="node.expandable">-->
+      <!--<mat-icon>{{treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>-->
+    <!--</a>-->
 
-      <mat-checkbox (click)="$event.stopPropagation()"
-        (change)="selectNode(node, $event)"
-        [checked]="selected">
-      {{node.key}}<span *ngIf="node.value">: {{node.value}}</span> </mat-checkbox>
+    <!--<a mat-icon-button>-->
+      <!--&lt;!&ndash;&ndash;&gt;-->
+      <!--&lt;!&ndash;*ngIf="node.expandable">&ndash;&gt;-->
+      <!--<mat-icon>{{ treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>-->
+    <!--</a>-->
+    <div matNodeTrigger matNodePadding>
+      {{node.key}} : {{node.value}}
     </div>
-  </mat-flat-tree-node>
-</mat-flat-tree>
+  </mat-tree-node>
+</mat-tree>
 
 
-<mat-nested-tree [data]="data">
-</mat-nested-tree>
+<!--<mat-nested-tree [data]="data">-->
+<!--</mat-nested-tree>-->
+
+{{treeControl.expansionModel.selected}}

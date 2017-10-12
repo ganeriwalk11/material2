@@ -12,15 +12,18 @@ import {RxChain, debounceTime} from '@angular/cdk/rxjs';
 import {
   AfterViewInit,
   ViewChild,
+  ChangeDetectionStrategy,
   Component,
   TemplateRef,
   ChangeDetectorRef,
   ContentChildren,
+  EmbeddedViewRef,
   QueryList,
   ViewContainerRef,
   Input,
   IterableDiffers,
   IterableDiffer,
+  NgIterable,
   ViewEncapsulation,
   ElementRef,
   OnInit,
@@ -29,10 +32,17 @@ import {
 } from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {fromEvent} from 'rxjs/observable/fromEvent';
-import {CdkNodeDef, CdkNode} from './tree-node';
+import {Subject} from 'rxjs/Subject';
+import {takeUntil} from 'rxjs/operator/takeUntil';
+import {CdkNodeDef, CdkTreeNode} from './tree-node';
 import {FlatNode} from './tree-node-data';
+import {Subscription} from 'rxjs/Subscription';
 import {CdkNodePlaceholder} from './tree-node-placeholder';
 import {TreeControl} from './tree-control';
+import {
+  getTreeMissingMatchingNodeDefError,
+  getTreeMultipleDefaultNodeDefsError
+} from './tree-errors';
 
 /** Height of each row in pixels (48 + 1px border) */
 export const ROW_HEIGHT = 49;
@@ -40,76 +50,117 @@ export const ROW_HEIGHT = 49;
 /** Amount of rows to buffer around the view */
 export const BUFFER = 3;
 
+/** The template for CDK tree */
+export const CDK_TREE_TEMPLATE = `
+    <ng-container cdkNodePlaceholder></ng-container>
+    <ng-template #emptyNode><div class="mat-placeholder"></div></ng-template>
+`;
+
 
 @Component({
   selector: 'cdk-tree',
-  template: `
-    <ng-container cdkNodePlaceholder></ng-container>
-    <ng-template #emptyNode><div class="mat-placeholder"></div></ng-template>
-  `,
+  exportAs: 'cdkTree',
+  template: CDK_TREE_TEMPLATE,
   host: {
+    'class': 'cdk-tree',
     'role': 'tree',
-    'class': 'mat-tree',
     '(focus)': 'focus()',
     '(keydown)': 'handleKeydown($event)'
   },
   encapsulation: ViewEncapsulation.None,
-  //changeDetection: ChangeDetectionStrategy.OnPush
+  preserveWhitespaces: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CdkTree implements CollectionViewer, AfterViewInit, OnInit, OnDestroy {
+export class CdkTree<T> implements CollectionViewer, AfterViewInit, OnInit, OnDestroy {
+  /** Subject that emits when the component has been destroyed. */
+  private _onDestroy = new Subject<void>();
 
-  _viewInitialized: boolean = false;
+  /** Latest data provided by the data source through the connect interface. */
+  private _data: NgIterable<T> = [];
 
-  /** Data source */
-  @Input() dataSource: DataSource<any>;
+  /** Subscription that listens for the data provided by the data source. */
+  private _renderChangeSubscription: Subscription | null;
+
+  /** Differ used to find the changes in the data provided by the data source. */
+  private _dataDiffer: IterableDiffer<T>;
+
+  /** Stores the node definition that does not have a when predicate. */
+  private _defaultNodeDef: CdkNodeDef<T> | null;
+
+  /** Focus related key manager */
+  _keyManager: FocusKeyManager<CdkTreeNode<T>>;
+
+  /** For focus, ordered nodes */
+  orderedNodes: QueryList<CdkTreeNode<T>> = new QueryList<CdkTreeNode<T>>();
+
+  /**
+   * Provides a stream containing the latest data array to render. Influenced by the tree's
+   * stream of view window (what rows are currently on screen).
+   */
+  @Input()
+  get dataSource(): DataSource<T> { return this._dataSource; }
+  set dataSource(dataSource: DataSource<T>) {
+    if (this._dataSource !== dataSource) {
+      this._switchDataSource(dataSource);
+    }
+  }
+  private _dataSource: DataSource<T>;
 
   /** The tree controller */
   @Input() treeControl: TreeControl;
 
-  /** View changed for CollectionViewer */
-  viewChange = new BehaviorSubject({start: 0, end: 20});
+  // TODO(andrewseguin): Remove max value as the end index
+  //   and instead calculate the view on init and scroll.
+  /**
+   * Stream containing the latest information on what rows are being displayed on screen.
+   * Can be used by the data source to as a heuristic of what data should be provided.
+   */
+  viewChange =
+    new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
-  /** Data differerences for the ndoes */
-  private _dataDiffer: IterableDiffer<any>;
+  // Placeholders within the tree's template where the nodes will be inserted.
+  @ViewChild(CdkNodePlaceholder) _nodePlaceholder: CdkNodePlaceholder;
 
-  // Focus related
-  _keyManager: FocusKeyManager<CdkNode>;
+  /** The tree node template for the tree */
+  @ContentChildren(CdkNodeDef) _nodeDefs: QueryList<CdkNodeDef<T>>;
 
-  orderedNodes: QueryList<CdkNode> = new QueryList<CdkNode>();
+  /** The tree node inside the tree */
+  @ContentChildren(CdkTreeNode, {descendants: true}) items: QueryList<CdkTreeNode<T>>;
 
-  @ContentChildren(CdkNode, {descendants: true}) items: QueryList<CdkNode>;
-  @ContentChildren(CdkNodeDef) nodeDefinitions: QueryList<CdkNodeDef>;
-  @ViewChild(CdkNodePlaceholder) nodePlaceholder: CdkNodePlaceholder;
-  @ViewChild('emptyNode') emptyNodeTemplate: TemplateRef<any>;
-
-  constructor(private _differs: IterableDiffers, private elementRef: ElementRef,
-              private changeDetectorRef: ChangeDetectorRef) {
-    this._dataDiffer = this._differs.find([]).create();
-  }
+  constructor(private _differs: IterableDiffers,
+              private _elementRef: ElementRef,
+              private _changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnInit() {
-    RxChain.from(fromEvent(this.elementRef.nativeElement, 'scroll'))
+    this._dataDiffer = this._differs.find([]).create();
+    RxChain.from(fromEvent(this._elementRef.nativeElement, 'scroll'))
       .call(debounceTime, 100)
       .subscribe(() => this.scrollEvent());
   }
 
-  ngDoCheck() {
-    if (this.dataSource && this._viewInitialized) {
-      this.dataSource.connect(this).subscribe((result: any[]) => {
-        this.renderNodeChanges(result);
-      });
-    }
-  }
-
   ngOnDestroy() {
+    this._nodePlaceholder.viewContainer.clear();
+
+    this._onDestroy.next();
+    this._onDestroy.complete();
+
     if (this.dataSource) {
       this.dataSource.disconnect(this);
     }
   }
 
+  ngAfterContentChecked() {
+    const defaultNodeDefs = this._nodeDefs.filter(def => !def.when);
+    if (defaultNodeDefs.length > 1) { throw getTreeMultipleDefaultNodeDefsError(); }
+    this._defaultNodeDef = defaultNodeDefs[0];
+
+    if (this.dataSource && !this._renderChangeSubscription) {
+      this._observeRenderChanges();
+    }
+  }
+
   ngAfterViewInit() {
-    // this.treeControl.expandChange.subscribe(() => this.changeDetectorRef.detectChanges());
-    this._viewInitialized = true;
+    this.treeControl.expandChange.subscribe(() => this._changeDetectorRef.detectChanges());
     this.items.changes.subscribe((items) => {
       let nodes = items.toArray();
 
@@ -120,63 +171,20 @@ export class CdkTree implements CollectionViewer, AfterViewInit, OnInit, OnDestr
 
       let activeItem = this._keyManager ? this._keyManager.activeItem : null;
       this._keyManager = new FocusKeyManager(this.orderedNodes);
-      if (activeItem instanceof CdkNode) {
+      if (activeItem instanceof CdkTreeNode) {
         this.updateFocusedNode(activeItem);
       }
-      this.changeDetectorRef.detectChanges();
+      this._changeDetectorRef.detectChanges();
     })
   }
 
-  renderNodeChanges(dataNodes: FlatNode[]) {
-    const changes = this._dataDiffer.diff(dataNodes);
-    if (!changes) { return; }
-
-    const oldScrollTop = this.elementRef.nativeElement.scrollTop;
-    changes.forEachOperation(
-      (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
-        if (item.previousIndex == null) {
-          this.addNode(this.nodePlaceholder.viewContainer, dataNodes[currentIndex], currentIndex);
-        } else if (currentIndex == null) {
-          this.nodePlaceholder.viewContainer.remove(adjustedPreviousIndex);
-        } else {
-          const view = this.nodePlaceholder.viewContainer.get(adjustedPreviousIndex);
-          if (view) {
-            this.nodePlaceholder.viewContainer.move(view, currentIndex);
-          }
-        }
-      });
-
-    // Scroll changes in the process of adding/removing rows. Reset it back to where it was
-    // so that it (1) it does not shift and (2) a scroll event does not get triggered which
-    // would cause a loop.
-    this.elementRef.nativeElement.scrollTop = oldScrollTop;
-    this.changeDetectorRef.detectChanges();
-  }
-
-  addNode(viewContainer: ViewContainerRef, data: any, currentIndex: number) {
-    if (!!data) {
-      this._addNodeInContainer(viewContainer, data, currentIndex);
-    } else {
-      viewContainer.createEmbeddedView(this.emptyNodeTemplate, {}, currentIndex);
-    }
-  }
-
-  _addNodeInContainer(container: ViewContainerRef, data: any, currentIndex: number) {
-    let node = this.getNodeDefForItem(data);
-    let context = {
-      $implicit: data
-    };
-    container.createEmbeddedView(node.template, context, currentIndex);
-  }
-
-  getNodeDefForItem(_) {
-    // proof-of-concept: only supporting one row definition
-    return this.nodeDefinitions.first;
+  detectChanges() {
+    this._changeDetectorRef.detectChanges();
   }
 
   scrollEvent() {
-    const scrollTop = this.elementRef.nativeElement.scrollTop;
-    const elementHeight = this.elementRef.nativeElement.getBoundingClientRect().height;
+    const scrollTop = this._elementRef.nativeElement.scrollTop;
+    const elementHeight = this._elementRef.nativeElement.getBoundingClientRect().height;
 
     const topIndex = Math.floor(scrollTop / ROW_HEIGHT);
 
@@ -188,10 +196,6 @@ export class CdkTree implements CollectionViewer, AfterViewInit, OnInit, OnDestr
     this.viewChange.next(view);
   }
 
-  printData() {
-    this.items.forEach((node) => console.log(node.data));
-  }
-
   // Key related
   // TODO(tinagao): Work on keyboard traversal
   handleKeydown(event) {
@@ -201,23 +205,110 @@ export class CdkTree implements CollectionViewer, AfterViewInit, OnInit, OnDestr
       this._keyManager.setNextItemActive();
     } else if (event.keyCode == RIGHT_ARROW) {
       let activeNode = this._keyManager.activeItem;
-      if (activeNode instanceof CdkNode) {
+      if (activeNode instanceof CdkTreeNode) {
         this.treeControl.expand(activeNode.data);
-        this.changeDetectorRef.detectChanges();
+        this._changeDetectorRef.detectChanges();
       }
     } else if (event.keyCode == LEFT_ARROW) {
       let activeNode = this._keyManager.activeItem;
-      if (activeNode instanceof CdkNode) {
+      if (activeNode instanceof CdkTreeNode) {
         this.treeControl.collapse(activeNode.data);
-        this.changeDetectorRef.detectChanges();
+        this._changeDetectorRef.detectChanges();
       }
     }
   }
 
-  updateFocusedNode(node: CdkNode) {
+  updateFocusedNode(node: CdkTreeNode<T>) {
     let index = this.orderedNodes.toArray().indexOf(node);
     if (this._keyManager && index > -1) {
       this._keyManager.setActiveItem(Math.min(this.orderedNodes.length -1, index));
     }
+  }
+
+  /**
+   * Switch to the provided data source by resetting the data and unsubscribing from the current
+   * render change subscription if one exists. If the data source is null, interpret this by
+   * clearing the node placeholder. Otherwise start listening for new data.
+   */
+  private _switchDataSource(dataSource: DataSource<T>) {
+    this._data = [];
+
+    if (this.dataSource) {
+      this.dataSource.disconnect(this);
+    }
+
+    // Stop listening for data from the previous data source.
+    if (this._renderChangeSubscription) {
+      this._renderChangeSubscription.unsubscribe();
+      this._renderChangeSubscription = null;
+    }
+
+    // Remove the table's rows if there is now no data source
+    if (!dataSource) {
+      this._nodePlaceholder.viewContainer.clear();
+    }
+
+    this._dataSource = dataSource;
+  }
+
+  /** Set up a subscription for the data provided by the data source. */
+  private _observeRenderChanges() {
+    this._renderChangeSubscription = takeUntil.call(this.dataSource.connect(this), this._onDestroy)
+      .subscribe(data => {
+        this._data = data;
+        this._renderNodeChanges(data);
+      });
+  }
+
+  /** Check for changes made in the data and render each change (node added/removed/moved). */
+  private _renderNodeChanges(dataNodes: T[]) {
+    const changes = this._dataDiffer.diff(dataNodes);
+    if (!changes) { return; }
+
+    const viewContainer = this._nodePlaceholder.viewContainer;
+    changes.forEachOperation(
+      (item: IterableChangeRecord<T>, adjustedPreviousIndex: number, currentIndex: number) => {
+        if (item.previousIndex == null) {
+          this.insertNode(dataNodes[currentIndex], currentIndex);
+        } else if (currentIndex == null) {
+          viewContainer.remove(adjustedPreviousIndex);
+        } else {
+          const view = viewContainer.get(adjustedPreviousIndex);
+          viewContainer.move(view!, currentIndex);
+        }
+      });
+  }
+
+  /**
+   * Finds the matching node definition that should be used for this node data. If there is only
+   * one node definition, it is returned. Otherwise, find the node definition that has a when
+   * predicate that returns true with the data. If none return true, return the default node
+   * definition.
+   */
+  _getNodeDef(data: T, i: number): CdkNodeDef<T> {
+    if (this._nodeDefs.length == 1) { return this._nodeDefs.first; }
+
+    let nodeDef = this._nodeDefs.find(def => def.when && def.when(data, i)) || this._defaultNodeDef;
+    if (!nodeDef) { throw getTreeMissingMatchingNodeDefError(); }
+
+    return nodeDef;
+  }
+
+  /**
+   * Create the embedded view for the data row template and place it in the correct index location
+   * within the data row view container.
+   */
+  insertNode(nodeData: T, index: number, viewContainer?: ViewContainerRef) {
+    const node = this._getNodeDef(nodeData, index);
+
+    // Row context that will be provided to both the created embedded row view and its cells.
+    const context = {$implicit: nodeData};
+
+    // TODO(andrewseguin): add some code to enforce that exactly one
+    //   CdkCellOutlet was instantiated as a result  of `createEmbeddedView`.
+    const container = viewContainer ? viewContainer : this._nodePlaceholder.viewContainer;
+    container.createEmbeddedView(node.template, context, index);
+
+    this._changeDetectorRef.markForCheck();
   }
 }

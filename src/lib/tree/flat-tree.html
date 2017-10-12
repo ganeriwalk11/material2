@@ -2,7 +2,7 @@
 <div class="tree-container mat-elevation-z4">
   <cdk-tree #tree [dataSource]="dataSource" [treeControl]="treeControl">
     <!-- Row templates. The columns used are set at the row template level -->
-    <cdk-node *cdkNodeDef="let node" [cdkNode]="node" (click)="currentNode=node">
+    <mat-flat-tree-node *cdkNodeDef="let node" [cdkNode]="node" (click)="currentNode=node">
       <!--<simple-tree-node [node]="node"-->
       <!--[selection]="selection">-->
       <!--</simple-tree-node>-->
@@ -23,6 +23,6 @@
           <!--{{node.key}}<span *ngIf="node.value">: {{node.value}}</span> </mat-checkbox>-->
       </div>
 
-    </cdk-node>
+    </mat-flat-tree-node>
   </cdk-tree>
 </div>

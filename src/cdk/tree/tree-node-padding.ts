@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Directive, Input} from '@angular/core';
-import {CdkNode} from './tree-node';
+import {CdkTreeNode} from './tree-node';
+import {FlatNode} from './tree-node-data';
 /**
  * Indent for the children
  */
@@ -24,8 +25,11 @@ export class CdkNodePadding {
   get paddingIndent() {
     let nodeLevel = (this.node.data && this.node.data.level) ? this.node.data.level : null;
     let level = this.level || nodeLevel;
+    console.log(`level ${level} indent ${this.indent}`);
     return level ? `${level * this.indent}px` : '';
   }
 
-  constructor(public node: CdkNode) {}
+  constructor(public node: CdkTreeNode<any>) {
+    console.log(`tree node padding`);
+  }
 }

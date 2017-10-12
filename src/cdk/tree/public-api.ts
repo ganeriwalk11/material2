@@ -9,7 +9,7 @@
 import {CdkTree} from './tree';
 import {CdkNodePadding} from './tree-node-padding';
 import {CdkNodePlaceholder} from './tree-node-placeholder';
-import {CdkNode, CdkNodeDef} from './tree-node';
+import {CdkTreeNode, CdkNodeDef} from './tree-node';
 import {CdkNodeTrigger} from './tree-node-trigger';
 import {CdkNestedNode} from './tree-nested-node';
 import {NgModule} from '@angular/core';
@@ -28,7 +28,7 @@ export * from './tree-node-trigger';
 let treeComponents = [
   CdkTree,
   CdkNodeDef,
-  CdkNode,
+  CdkTreeNode,
   CdkNodePlaceholder,
   CdkNodeTrigger,
   CdkNodePadding,

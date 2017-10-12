@@ -7,24 +7,26 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatFlatTree} from './flat-tree';
-import {MatFlatTreeNode} from './flat-tree-node';
-import {MatNestedTree} from './nested-tree';
-import {MatNestedTreeNode} from './nested-tree-node';
+import {MatTree} from './flat-tree';
+import {MatTreeNode} from './flat-tree-node';
+// import {MatNestedTree} from './nested-tree';
+// import {MatNestedTreeNode} from './nested-tree-node';
+import {MatNodeTrigger, MatNodePadding} from './node-trigger';
 import {CdkTreeModule} from '@angular/cdk/tree';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 
 export * from './flat-tree';
 export * from './flat-tree-node';
-export * from './nested-tree';
-export * from './nested-tree-node';
+export * from './node-trigger';
+// export * from './nested-tree';
+// export * from './nested-tree-node';
 export * from './flat-data-source';
 export * from './nested-data-source';
 
 @NgModule({
   imports: [CdkTreeModule, CommonModule, MatCommonModule],
-  exports: [MatFlatTree, MatFlatTreeNode, MatNestedTree, MatNestedTreeNode],
-  declarations: [MatFlatTree, MatFlatTreeNode, MatNestedTree, MatNestedTreeNode]
+  exports: [CommonModule, MatCommonModule, MatTree, MatTreeNode, MatNodeTrigger, MatNodePadding/*, MatNestedTree, MatNestedTreeNode*/],
+  declarations: [MatTree, MatTreeNode, MatNodeTrigger, MatNodePadding/*, MatNestedTree, MatNestedTreeNode*/]
 })
 export class MatTreeModule {}

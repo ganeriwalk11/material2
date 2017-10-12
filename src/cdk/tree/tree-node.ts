@@ -12,9 +12,13 @@ import {
   Input,
   OnDestroy,
   Renderer2,
-  TemplateRef
+  TemplateRef,
+  ViewContainerRef
 } from '@angular/core';
 import {FocusableOption, FocusMonitor} from '@angular/cdk/a11y';
+
+/** The tree node template */
+export const CDK_TREE_NODE_TEMPLATE = '<ng-content cdkNodeOutlet></ng-content>';
 
 /**
  * Node template
@@ -22,14 +26,23 @@ import {FocusableOption, FocusMonitor} from '@angular/cdk/a11y';
 @Directive({
   selector: '[cdkNodeDef]'
 })
-export class CdkNodeDef {
+export class CdkNodeDef<T> {
+  /**
+   * Function that should return true if this node template should be used for the provided node
+   * data and index. If left undefined, this node will be considered the default node template to
+   * use when no other when functions return true for the data.
+   * For every node, there must be at least one when function that passes or an undefined to
+   * default.
+   */
+  when: (nodeData: T, index: number) => boolean;
+
   constructor(public template: TemplateRef<any>) {}
 }
 
 // TODO: Role should be group for expandable ndoes
 @Component({
-  selector: 'cdk-node',
-  template: '<ng-content></ng-content>',
+  selector: 'cdk-tree-node',
+  template: CDK_TREE_NODE_TEMPLATE,
   host: {
     'role': 'treeitem',
     '(focus)': 'focus()',
@@ -37,49 +50,46 @@ export class CdkNodeDef {
     'tabindex': '0',
   }
 })
-export class CdkNode  implements FocusableOption, OnDestroy {
+export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
   @Input('cdkNode')
-  set data(v: any) {
+  set data(v: T) {
     this._data = v;
-    if ('level' in v) {
-      this._role = this._data.expandable ? 'group' : 'treeitem';
-    } else {
-      // Nested node
-      this._data.getChildren().subscribe((children) => {
-        this._role = !!children ? 'group' : 'treeitem';
-      })
-    }
+    // if ('level' in v) {
+    //   this._role = this._data.expandable ? 'group' : 'treeitem';
+    // } else {
+    //   // Nested node
+    //   this._data.getChildren().subscribe((children) => {
+    //     this._role = !!children ? 'group' : 'treeitem';
+    //   })
+    // }
   }
 
-  get data(): any {
+  get data(): T {
     return this._data;
   }
-  _data: any;
+  _data: T;
 
   @Input()
   get role() {
     return this._role;
   }
-  _role: string;
+  _role: string = 'treeitem';
 
-  get offsetTop() {
-    return this.elementRef.nativeElement.offsetTop;
-  }
 
-  constructor(private elementRef: ElementRef,
-              private renderer: Renderer2,
+  constructor(private _elementRef: ElementRef,
+              private _renderer: Renderer2,
               private _focusMonitor: FocusMonitor) {
-    this.renderer.addClass(elementRef.nativeElement, 'mat-data');
-    this._focusMonitor.monitor(this.elementRef.nativeElement, this.renderer, true);
+    this._renderer.addClass(_elementRef.nativeElement, 'mat-data');
+    this._focusMonitor.monitor(this._elementRef.nativeElement, this._renderer, true);
   }
 
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this.elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
   }
 
   /** Focuses the menu item. */
   focus(): void {
-    this.elementRef.nativeElement.focus();
+    this._elementRef.nativeElement.focus();
   }
 }

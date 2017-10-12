@@ -11,9 +11,11 @@ import {
   Directive,
   forwardRef,
   Inject,
-  Input
+  Input,
+  Optional,
 } from '@angular/core';
 import {CdkTree} from './tree';
+import {CdkTreeNode} from './tree-node';
 
 /**
  * Node trigger
@@ -24,24 +26,38 @@ import {CdkTree} from './tree';
     '(click)': 'trigger($event)',
   }
 })
-export class CdkNodeTrigger {
-  @Input('cdkNodeTrigger') node: any;
+export class CdkNodeTrigger<T> {
+  // @Input('cdkNodeTrigger') node: any;
   @Input('cdkNodeTriggerRecursive') recursive: boolean = false;
-  @Input('cdkNodeTriggerSelection') selection: SelectionModel<any>;
+  // @Input('cdkNodeTriggerSelection') selection: SelectionModel<T>;
 
-  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree) {}
-
-  trigger(_: Event) {
-    this.selection.toggle(this.node);
-    if (this.recursive) {
-      this.selectRecursive(this.node, this.selection.isSelected(this.node));
-    }
+  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree<T>,
+              private treeNode: CdkTreeNode<T>) {
+    console.log(`tree ${tree} treeNode ${treeNode}`);
   }
 
-  selectRecursive(node: any, select: boolean) {
-    let decedents = this.tree.treeControl.getDecedents(node);
+  trigger(_: Event) {
+    this.recursive
+        ? this.tree.treeControl.toggleDecedents(this.treeNode.data)
+        : this.tree.treeControl.toggle(this.treeNode.data);
+    this.tree.detectChanges();
+    //
+    // const selection = this.selection ? this.selection : this.tree.treeControl.expansionModel;
+    // console.log(this.tree.treeControl);
+    // console.log(selection);
+    //
+    // selection.toggle(this.node);
+    // if (this.recursive) {
+    //   this.selectRecursive(this.node, selection.isSelected(this.node));
+    // }
+  }
+
+  selectRecursive(node: T, select: boolean) {
+    const selection =
+        this.tree.treeControl.expansionModel;
+    const decedents = this.tree.treeControl.getDecedents(node);
     decedents.forEach((child) => {
-      select ? this.selection.select(child) : this.selection.deselect(child);
+      select ? selection.select(child) : selection.deselect(child);
     });
   }
 }

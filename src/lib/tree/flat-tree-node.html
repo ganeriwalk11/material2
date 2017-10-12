@@ -1,16 +1,18 @@
-<div class="row">
-  <div class="space">
-    <!--<div *ngFor="let a of createArray(node.parentMap.length); let index = index" [class.special]="node.parentMap[index]"></div>-->
-  </div>
-  <div style="width: 40px; display: inline-block">
-    <!--<a mat-icon-button (click)="treeControl.toggleDecedents(node)" *ngIf="node.expandable">-->
-      <!--<mat-icon>{{ treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>-->
-    <!--</a>-->
-  </div>
+<!--<div class="row">-->
+  <!--<div class="space">-->
+    <!--&lt;!&ndash;<div *ngFor="let a of createArray(node.parentMap.length); let index = index" [class.special]="node.parentMap[index]"></div>&ndash;&gt;-->
+  <!--</div>-->
+  <!--<div style="width: 40px; display: inline-block">-->
+    <!--&lt;!&ndash;<a mat-icon-button (click)="treeControl.toggleDecedents(node)" *ngIf="node.expandable">&ndash;&gt;-->
+      <!--&lt;!&ndash;<mat-icon>{{ treeControl.expanded(node) ? 'keyboard_arrow_down' : 'keyboard_arrow_right' }}</mat-icon>&ndash;&gt;-->
+    <!--&lt;!&ndash;</a>&ndash;&gt;-->
+  <!--</div>-->
 
-  <!--<mat-checkbox (click)="$event.stopPropagation()"-->
-               <!--(change)="selectNode(node, $event)"-->
-               <!--[checked]="selected">-->
-    <!--{{node.key}}<span *ngIf="node.value">: {{node.value}}</span> </mat-checkbox>-->
-</div>
+  <!--&lt;!&ndash;<mat-checkbox (click)="$event.stopPropagation()"&ndash;&gt;-->
+               <!--&lt;!&ndash;(change)="selectNode(node, $event)"&ndash;&gt;-->
+               <!--&lt;!&ndash;[checked]="selected">&ndash;&gt;-->
+    <!--&lt;!&ndash;{{node.key}}<span *ngIf="node.value">: {{node.value}}</span> </mat-checkbox>&ndash;&gt;-->
+<!--</div>-->
+
+<ng-content></ng-content>
 

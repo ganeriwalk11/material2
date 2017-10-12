@@ -30,7 +30,7 @@ import {CdkNodePlaceholder} from './tree-node-placeholder';
 @Directive({
   selector: '[cdkNestedNode]'
 })
-export class CdkNestedNode implements AfterContentInit, AfterViewInit, OnDestroy {
+export class CdkNestedNode<T extends NestedNode> implements AfterContentInit, AfterViewInit, OnDestroy {
   @Input('cdkNestedNode') node: NestedNode;
 
   @ContentChildren(CdkNodePlaceholder) nodePlaceholder: QueryList<CdkNodePlaceholder>;
@@ -38,7 +38,7 @@ export class CdkNestedNode implements AfterContentInit, AfterViewInit, OnDestroy
   _childrenSubscription: Subscription;
   _treeControlSubscription: Subscription;
 
-  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree,
+  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree<T>,
               private _changeDetectorRef: ChangeDetectorRef) {}
 
   viewContainer: ViewContainerRef;
@@ -67,13 +67,13 @@ export class CdkNestedNode implements AfterContentInit, AfterViewInit, OnDestroy
     this._clear();
   }
 
-  _addChildrenNodes(children: NestedNode[]) {
+  _addChildrenNodes(children: T[]) {
     if (this.nodePlaceholder.length) {
       this.viewContainer = this.nodePlaceholder.first.viewContainer;
       this.viewContainer.clear();
       if (children.length) {
         children.forEach((child, index) => {
-          this.tree.addNode(this.viewContainer, child, index);
+          this.tree.insertNode(child, index, this.viewContainer);
         });
       } else {
         this._clear();
