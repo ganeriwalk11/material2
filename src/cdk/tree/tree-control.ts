@@ -7,8 +7,8 @@
  */
 import {SelectionModel} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {FlatNode, NestedNode} from './tree-node-data';
-import {CdkTreeNode} from './tree-node';
+import {FlatNode, NestedNode} from './tree-data';
+import {CdkTreeNode} from './node';
 
 /**
  * Tree control interface

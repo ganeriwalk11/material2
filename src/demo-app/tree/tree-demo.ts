@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
-import {JsonDataSource, JsonFlatNode} from '@angular/material/tree';
-import {TreeControl, FlatTreeControl} from '@angular/cdk/tree';
+import {JsonDataSource, JsonFlatNode, JsonNestedDataSource, JsonNestedNode} from '@angular/material/tree';
+import {TreeControl, FlatTreeControl, NestedTreeControl} from '@angular/cdk/tree';
 import {SelectionModel} from '@angular/cdk/collections';
 
 @Component({
@@ -10,6 +10,14 @@ import {SelectionModel} from '@angular/cdk/collections';
   styleUrls: ['tree-demo.css'],
 })
 export class TreeDemo {
+//   data: string = `{
+//     "debug": "on",
+//     "title": "Sample Konfabulator Widget",
+//     "name": "main_window",
+//     "width": 500,
+//     "height": 500
+// }
+// `;
   data: string = `{"widget": {
     "debug": "on",
     "window": {
@@ -40,18 +48,26 @@ export class TreeDemo {
 
   selection: SelectionModel<JsonFlatNode> = new SelectionModel<JsonFlatNode>(true, []);
 
-  treeControl: TreeControl;
+  treeControl: FlatTreeControl<JsonFlatNode>;
+
+  nestedTreeControl: NestedTreeControl<JsonNestedNode>;
 
   dataSource: JsonDataSource;
 
+  nestedDataSource: JsonNestedDataSource;
+
   constructor() {
     this.treeControl = new FlatTreeControl<JsonFlatNode>();
-    this.dataSource = new JsonDataSource(this.treeControl as FlatTreeControl<JsonFlatNode>);
+    this.dataSource = new JsonDataSource(this.treeControl);
+
+    this.nestedTreeControl = new NestedTreeControl<JsonNestedNode>();
+    this.nestedDataSource = new JsonNestedDataSource(this.treeControl);
   }
 
   ngAfterViewInit() {
     this._submit();
     this.treeControl.expandChange.next([]);
+    this.nestedTreeControl.expandChange.next([]);
   }
 
   _submit() {
@@ -59,6 +75,7 @@ export class TreeDemo {
       console.log(this.data);
       let obj = JSON.parse(this.data);
       this.dataSource.data = obj;
+      this.nestedDataSource.data = obj;
     } catch (e) {
       console.log(e);
     }

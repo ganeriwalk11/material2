@@ -11,33 +11,31 @@ import {UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW} from '@angular/cdk/keycod
 import {RxChain, debounceTime} from '@angular/cdk/rxjs';
 import {
   AfterViewInit,
-  ViewChild,
   ChangeDetectionStrategy,
-  Component,
-  TemplateRef,
   ChangeDetectorRef,
+  Component,
   ContentChildren,
-  EmbeddedViewRef,
-  QueryList,
-  ViewContainerRef,
+  ElementRef,
   Input,
   IterableDiffers,
   IterableDiffer,
   NgIterable,
-  ViewEncapsulation,
-  ElementRef,
-  OnInit,
+  IterableChangeRecord,
   OnDestroy,
-  IterableChangeRecord
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {fromEvent} from 'rxjs/observable/fromEvent';
-import {Subject} from 'rxjs/Subject';
 import {takeUntil} from 'rxjs/operator/takeUntil';
-import {CdkNodeDef, CdkTreeNode} from './tree-node';
-import {FlatNode} from './tree-node-data';
+import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
-import {CdkNodePlaceholder} from './tree-node-placeholder';
+import {CdkNodeDef, CdkTreeNode} from './node';
+import {CdkNodePlaceholder} from './placeholder';
+import {FlatNode, NestedNode} from './tree-data';
 import {TreeControl} from './tree-control';
 import {
   getTreeMissingMatchingNodeDefError,
@@ -51,12 +49,13 @@ export const ROW_HEIGHT = 49;
 export const BUFFER = 3;
 
 /** The template for CDK tree */
-export const CDK_TREE_TEMPLATE = `
-    <ng-container cdkNodePlaceholder></ng-container>
-    <ng-template #emptyNode><div class="mat-placeholder"></div></ng-template>
-`;
+export const CDK_TREE_TEMPLATE = `<ng-container cdkNodePlaceholder></ng-container>`;
 
 
+/**
+ * CDK tree component that connects with a data source to retrieve data of type `T` and renders
+ * nodes with hierarchy. Updates the nodes when new data is provided by the data source.
+ */
 @Component({
   selector: 'cdk-tree',
   exportAs: 'cdkTree',
@@ -71,7 +70,8 @@ export const CDK_TREE_TEMPLATE = `
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CdkTree<T> implements CollectionViewer, AfterViewInit, OnInit, OnDestroy {
+export class CdkTree<T extends FlatNode|NestedNode> implements
+    CollectionViewer, AfterViewInit, OnInit, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
@@ -309,6 +309,6 @@ export class CdkTree<T> implements CollectionViewer, AfterViewInit, OnInit, OnDe
     const container = viewContainer ? viewContainer : this._nodePlaceholder.viewContainer;
     container.createEmbeddedView(node.template, context, index);
 
-    this._changeDetectorRef.markForCheck();
+    this._changeDetectorRef.detectChanges();
   }
 }
