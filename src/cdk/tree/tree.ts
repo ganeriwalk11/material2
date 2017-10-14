@@ -42,12 +42,6 @@ import {
   getTreeMultipleDefaultNodeDefsError
 } from './tree-errors';
 
-/** Height of each row in pixels (48 + 1px border) */
-export const ROW_HEIGHT = 49;
-
-/** Amount of rows to buffer around the view */
-export const BUFFER = 3;
-
 /** The template for CDK tree */
 export const CDK_TREE_TEMPLATE = `<ng-container cdkNodePlaceholder></ng-container>`;
 
@@ -133,9 +127,6 @@ export class CdkTree<T extends FlatNode|NestedNode> implements
 
   ngOnInit() {
     this._dataDiffer = this._differs.find([]).create();
-    RxChain.from(fromEvent(this._elementRef.nativeElement, 'scroll'))
-      .call(debounceTime, 100)
-      .subscribe(() => this.scrollEvent());
   }
 
   ngOnDestroy() {
@@ -160,7 +151,7 @@ export class CdkTree<T extends FlatNode|NestedNode> implements
   }
 
   ngAfterViewInit() {
-    this.treeControl.expandChange.subscribe(() => this._changeDetectorRef.detectChanges());
+    // For key traversal in correct order
     this.items.changes.subscribe((items) => {
       let nodes = items.toArray();
 
@@ -172,28 +163,10 @@ export class CdkTree<T extends FlatNode|NestedNode> implements
       let activeItem = this._keyManager ? this._keyManager.activeItem : null;
       this._keyManager = new FocusKeyManager(this.orderedNodes);
       if (activeItem instanceof CdkTreeNode) {
-        this.updateFocusedNode(activeItem);
+        this._updateFocusedNode(activeItem);
       }
       this._changeDetectorRef.detectChanges();
     })
-  }
-
-  detectChanges() {
-    this._changeDetectorRef.detectChanges();
-  }
-
-  scrollEvent() {
-    const scrollTop = this._elementRef.nativeElement.scrollTop;
-    const elementHeight = this._elementRef.nativeElement.getBoundingClientRect().height;
-
-    const topIndex = Math.floor(scrollTop / ROW_HEIGHT);
-
-    const view = {
-      start: Math.max(topIndex - BUFFER, 0),
-      end: Math.ceil(topIndex + (elementHeight / ROW_HEIGHT)) + BUFFER
-    };
-
-    this.viewChange.next(view);
   }
 
   // Key related
@@ -218,7 +191,8 @@ export class CdkTree<T extends FlatNode|NestedNode> implements
     }
   }
 
-  updateFocusedNode(node: CdkTreeNode<T>) {
+  /** Update focused node in keymanager */
+  _updateFocusedNode(node: CdkTreeNode<T>) {
     let index = this.orderedNodes.toArray().indexOf(node);
     if (this._keyManager && index > -1) {
       this._keyManager.setActiveItem(Math.min(this.orderedNodes.length -1, index));

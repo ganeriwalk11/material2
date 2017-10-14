@@ -14,14 +14,20 @@ import {CdkTreeNode} from './node';
  * Tree control interface
  */
 export interface TreeControl {
+  /** The node data */
   nodes: any[];
+
   /** The expansion change event */
   expandChange: BehaviorSubject<any>;
 
+  /** The expansion model */
   expansionModel: SelectionModel<any>;
 
+  /** Whether the node is expanded or collapsed. Return true if it's expanded. */
+  expanded(node: any): boolean;
+
   /** Get all decedents of a node */
-  getDecedents(node: any);
+  getDecedents(node: any): any[];
 
   /** Expand or collapse node */
   toggle(node: any);
@@ -46,9 +52,102 @@ export interface TreeControl {
 
   /** Collapse a ndoe and all its decedents */
   collapseDecedents(node: any);
-
-  expanded(node: any);
 }
+
+// export abstract class BaseTreeControl<T extends FlatNode|NestedNode> implements TreeControl {
+//   nodes: T[];
+//
+//   /** Expansion info: the changes */
+//   expandChange = new BehaviorSubject<T[]>([]);
+//
+//   /** Expansion Statues */
+//   set expansionModel(model: SelectionModel<T>) {
+//     if (this._expansionModel != null && this._expansionModel.onChange != null) {
+//       this._expansionModel.onChange.unsubscribe();
+//       this._expansionModel = model;
+//       if (this._expansionModel && this._expansionModel.onChange) {
+//         this._expansionModel.onChange.subscribe((_) => this.expandChange.next(this.expansionModel.selected));
+//       }
+//     }
+//   }
+//   get expansionModel() { return this._expansionModel; }
+//   _expansionModel = new SelectionModel<T>(true);
+//
+//   /** Expansion info: the model */
+//   constructor() {
+//     if (this._expansionModel != null && this._expansionModel.onChange != null) {
+//       this._expansionModel.onChange.subscribe((_) =>
+//         this.expandChange.next(this.expansionModel.selected));
+//     }
+//   }
+//
+//
+//   toggle(node: T) {
+//     this._expansionModel.toggle(node);
+//     // this.expandChange.next(this._expansionModel.selected);
+//   }
+//
+//   expand(node: T) {
+//     this._expansionModel.select(node);
+//     // this.expandChange.next(this._expansionModel.selected);
+//   }
+//
+//   collapse(node: T) {
+//     this._expansionModel.deselect(node);
+//     // this.expandChange.next(this._expansionModel.selected);
+//   }
+//
+//   expanded(node: any): boolean {
+//     return this._expansionModel.isSelected(node);
+//   }
+//
+//   expandAll() {
+//     this._expansionModel.clear();
+//     this.nodes.forEach((node) => {
+//       node.expandable && this._expansionModel.select(node);
+//     });
+//     // this.expandChange.next(this._expansionModel.selected);
+//   }
+//
+//   collapseAll() {
+//     this._expansionModel.clear();
+//     // this.expandChange.next(this._expansionModel.selected);
+//   }
+//
+//   getDecedents(node: T) {
+//     let startIndex = this.nodes.indexOf(node);
+//     let results: T[] = [];
+//     let i = startIndex + 1;
+//     for (; i < this.nodes.length && node.level < this.nodes[i].level; i++) {
+//       results.push(this.nodes[i]);
+//     }
+//     return results;
+//   }
+//
+//   expandDecedents(node: T) {
+//     console.log(`expand decedents ${node}`);
+//     let decedents = this.getDecedents(node);
+//     decedents.forEach((child) => child.expandable && this._expansionModel.select(child));
+//     // this.expandChange.next(this._expansionModel.selected);
+//     console.log(this.expansionModel.selected);
+//   }
+//
+//   collapseDecedents(node: T) {
+//     console.log(`collapse decedents ${node}`);
+//     let decedents = this.getDecedents(node);
+//     decedents.forEach((child) => this._expansionModel.deselect(child));
+//     // this.expandChange.next(this._expansionModel.selected);
+//     console.log(this.expansionModel.selected);
+//   }
+//
+//   toggleDecedents(node: T) {
+//     console.log(`toggle decedents ${node}`);
+//     this._expansionModel.toggle(node);
+//     let expand = this._expansionModel.isSelected(node);
+//     expand ? this.expandDecedents(node) : this.collapseDecedents(node);
+//     console.log(this.expansionModel.selected);
+//   }
+// }
 
 
 export class FlatTreeControl<T extends FlatNode> implements TreeControl {
@@ -70,22 +169,30 @@ export class FlatTreeControl<T extends FlatNode> implements TreeControl {
   get expansionModel() { return this._expansionModel; }
   _expansionModel = new SelectionModel<T>(true);
 
+  /** Expansion info: the model */
+  constructor() {
+    if (this._expansionModel != null && this._expansionModel.onChange != null) {
+      this._expansionModel.onChange.subscribe((_) =>
+        this.expandChange.next(this.expansionModel.selected));
+    }
+  }
+
   toggle(node: T) {
     this._expansionModel.toggle(node);
-    this.expandChange.next(this._expansionModel.selected);
+    // this.expandChange.next(this._expansionModel.selected);
   }
 
   expand(node: T) {
     this._expansionModel.select(node);
-    this.expandChange.next(this._expansionModel.selected);
+    // this.expandChange.next(this._expansionModel.selected);
   }
 
   collapse(node: T) {
     this._expansionModel.deselect(node);
-    this.expandChange.next(this._expansionModel.selected);
+    // this.expandChange.next(this._expansionModel.selected);
   }
 
-  expanded(node: any) {
+  expanded(node: any): boolean {
     return this._expansionModel.isSelected(node);
   }
 
@@ -94,12 +201,12 @@ export class FlatTreeControl<T extends FlatNode> implements TreeControl {
     this.nodes.forEach((node) => {
       node.expandable && this._expansionModel.select(node);
     });
-    this.expandChange.next(this._expansionModel.selected);
+    // this.expandChange.next(this._expansionModel.selected);
   }
 
   collapseAll() {
     this._expansionModel.clear();
-    this.expandChange.next(this._expansionModel.selected);
+    // this.expandChange.next(this._expansionModel.selected);
   }
 
   getDecedents(node: T) {
@@ -116,7 +223,7 @@ export class FlatTreeControl<T extends FlatNode> implements TreeControl {
     console.log(`expand decedents ${node}`);
     let decedents = this.getDecedents(node);
     decedents.forEach((child) => child.expandable && this._expansionModel.select(child));
-    this.expandChange.next(this._expansionModel.selected);
+     // this.expandChange.next(this._expansionModel.selected);
     console.log(this.expansionModel.selected);
   }
 
@@ -124,7 +231,7 @@ export class FlatTreeControl<T extends FlatNode> implements TreeControl {
     console.log(`collapse decedents ${node}`);
     let decedents = this.getDecedents(node);
     decedents.forEach((child) => this._expansionModel.deselect(child));
-    this.expandChange.next(this._expansionModel.selected);
+    // this.expandChange.next(this._expansionModel.selected);
     console.log(this.expansionModel.selected);
   }
 

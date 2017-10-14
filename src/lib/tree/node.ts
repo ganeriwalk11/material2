@@ -58,6 +58,7 @@ export class MatTreeNode<T extends FlatNode|NestedNode> extends _MatTreeNode<T> 
  */
 @Directive({
   selector: '[matNodeDef]',
+  inputs: ['when: matNodeDefWhen'],
   providers: [{provide: CdkNodeDef, useExisting: MatNodeDef}]
 })
 export class MatNodeDef<T extends FlatNode|NestedNode> extends _MatNodeDef<T> {

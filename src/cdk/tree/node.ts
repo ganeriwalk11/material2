@@ -29,7 +29,8 @@ export const CDK_TREE_NODE_TEMPLATE = '<ng-content cdkNodeOutlet></ng-content>';
  * Captures the node's template and a when predicate that describes when this node should be used.
  */
 @Directive({
-  selector: '[cdkNodeDef]'
+  selector: '[cdkNodeDef]',
+  inputs: ['when: cdkNodeDefWhen'],
 })
 export class CdkNodeDef<T extends FlatNode|NestedNode> {
   /**
@@ -83,6 +84,12 @@ export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOpt
   }
   get data(): T { return this._data; }
   _data: T;
+
+
+  /** The offset top of the element. Used by CdkTree to decide the order of the nodes. [Focus] */
+  get offsetTop() {
+    return this._elementRef.nativeElement.offsetTop;
+  }
 
   /**
    * The role of the node should be 'group' if it's an internal node,

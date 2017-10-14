@@ -10,14 +10,7 @@ import {SelectionModel} from '@angular/cdk/collections';
   styleUrls: ['tree-demo.css'],
 })
 export class TreeDemo {
-//   data: string = `{
-//     "debug": "on",
-//     "title": "Sample Konfabulator Widget",
-//     "name": "main_window",
-//     "width": 500,
-//     "height": 500
-// }
-// `;
+
   data: string = `{"widget": {
     "debug": "on",
     "window": {
@@ -66,8 +59,8 @@ export class TreeDemo {
 
   ngAfterViewInit() {
     this._submit();
-    this.treeControl.expandChange.next([]);
-    this.nestedTreeControl.expandChange.next([]);
+    // this.treeControl.expandChange.next([]);
+    // this.nestedTreeControl.expandChange.next([]);
   }
 
   _submit() {
@@ -80,5 +73,9 @@ export class TreeDemo {
       console.log(e);
     }
   }
+
+  hasChild = (_nodeData: JsonFlatNode) => _nodeData.expandable;
+
+  hasNestedChild = (nodeData: JsonNestedNode) => !(nodeData.value);
 }
 

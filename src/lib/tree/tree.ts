@@ -123,6 +123,9 @@ export const _MatTree = CdkTree;
   template: MAT_TREE_TEMPLATE,
   host: {
     'class': 'mat-tree',
+    'role': 'tree',
+    '(focus)': 'focus()',
+    '(keydown)': 'handleKeydown($event)'
   },
   encapsulation: ViewEncapsulation.None,
   preserveWhitespaces: false,
