@@ -11,7 +11,7 @@ import {Observable} from 'rxjs/Observable';
 /** Interface for data in flat tree. Tree users should implement this interface to use CdkTree. */
 export interface FlatNode {
   level: number;
-  expandable: boolean;
+  readonly expandable: boolean;
 }
 
 /** Interface for data in nested tree. Tree users should implement this interface to use CdkTree. */

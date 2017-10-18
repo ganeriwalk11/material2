@@ -23,5 +23,5 @@ export const _MatNodeTrigger = CdkNodeTrigger;
   providers: [{provide: CdkNodeTrigger, useExisting: MatNodeTrigger}]
 })
 export class MatNodeTrigger<T extends FlatNode|NestedNode> extends _MatNodeTrigger<T> {
-  @Input('matNodeTriggerRecursive') recursive: boolean = false;
+  @Input('matNodeTriggerRecursive') recursive: boolean = true;
 }

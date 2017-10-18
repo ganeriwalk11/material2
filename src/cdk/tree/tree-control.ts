@@ -54,300 +54,169 @@ export interface TreeControl {
   collapseDecedents(node: any);
 }
 
-// export abstract class BaseTreeControl<T extends FlatNode|NestedNode> implements TreeControl {
-//   nodes: T[];
-//
-//   /** Expansion info: the changes */
-//   expandChange = new BehaviorSubject<T[]>([]);
-//
-//   /** Expansion Statues */
-//   set expansionModel(model: SelectionModel<T>) {
-//     if (this._expansionModel != null && this._expansionModel.onChange != null) {
-//       this._expansionModel.onChange.unsubscribe();
-//       this._expansionModel = model;
-//       if (this._expansionModel && this._expansionModel.onChange) {
-//         this._expansionModel.onChange.subscribe((_) => this.expandChange.next(this.expansionModel.selected));
-//       }
-//     }
-//   }
-//   get expansionModel() { return this._expansionModel; }
-//   _expansionModel = new SelectionModel<T>(true);
-//
-//   /** Expansion info: the model */
-//   constructor() {
-//     if (this._expansionModel != null && this._expansionModel.onChange != null) {
-//       this._expansionModel.onChange.subscribe((_) =>
-//         this.expandChange.next(this.expansionModel.selected));
-//     }
-//   }
-//
-//
-//   toggle(node: T) {
-//     this._expansionModel.toggle(node);
-//     // this.expandChange.next(this._expansionModel.selected);
-//   }
-//
-//   expand(node: T) {
-//     this._expansionModel.select(node);
-//     // this.expandChange.next(this._expansionModel.selected);
-//   }
-//
-//   collapse(node: T) {
-//     this._expansionModel.deselect(node);
-//     // this.expandChange.next(this._expansionModel.selected);
-//   }
-//
-//   expanded(node: any): boolean {
-//     return this._expansionModel.isSelected(node);
-//   }
-//
-//   expandAll() {
-//     this._expansionModel.clear();
-//     this.nodes.forEach((node) => {
-//       node.expandable && this._expansionModel.select(node);
-//     });
-//     // this.expandChange.next(this._expansionModel.selected);
-//   }
-//
-//   collapseAll() {
-//     this._expansionModel.clear();
-//     // this.expandChange.next(this._expansionModel.selected);
-//   }
-//
-//   getDecedents(node: T) {
-//     let startIndex = this.nodes.indexOf(node);
-//     let results: T[] = [];
-//     let i = startIndex + 1;
-//     for (; i < this.nodes.length && node.level < this.nodes[i].level; i++) {
-//       results.push(this.nodes[i]);
-//     }
-//     return results;
-//   }
-//
-//   expandDecedents(node: T) {
-//     console.log(`expand decedents ${node}`);
-//     let decedents = this.getDecedents(node);
-//     decedents.forEach((child) => child.expandable && this._expansionModel.select(child));
-//     // this.expandChange.next(this._expansionModel.selected);
-//     console.log(this.expansionModel.selected);
-//   }
-//
-//   collapseDecedents(node: T) {
-//     console.log(`collapse decedents ${node}`);
-//     let decedents = this.getDecedents(node);
-//     decedents.forEach((child) => this._expansionModel.deselect(child));
-//     // this.expandChange.next(this._expansionModel.selected);
-//     console.log(this.expansionModel.selected);
-//   }
-//
-//   toggleDecedents(node: T) {
-//     console.log(`toggle decedents ${node}`);
-//     this._expansionModel.toggle(node);
-//     let expand = this._expansionModel.isSelected(node);
-//     expand ? this.expandDecedents(node) : this.collapseDecedents(node);
-//     console.log(this.expansionModel.selected);
-//   }
-// }
-
-
-export class FlatTreeControl<T extends FlatNode> implements TreeControl {
+/** Base tree control. It has basic toggle/expand/collapse operations on a single node. */
+export abstract class BaseTreeControl<T extends FlatNode|NestedNode> implements TreeControl {
+  /** Saved node for `expandAll` action. */
   nodes: T[];
 
   /** Expansion info: the changes */
   expandChange = new BehaviorSubject<T[]>([]);
 
-  /** Expansion Statues */
-  set expansionModel(model: SelectionModel<T>) {
-    if (this._expansionModel != null && this._expansionModel.onChange != null) {
-      this._expansionModel.onChange.unsubscribe();
-      this._expansionModel = model;
-      if (this._expansionModel && this._expansionModel.onChange) {
-        this._expansionModel.onChange.subscribe((_) => this.expandChange.next(this.expansionModel.selected));
-      }
-    }
-  }
-  get expansionModel() { return this._expansionModel; }
-  _expansionModel = new SelectionModel<T>(true);
+  /** A selection model with multi-selection to track expansion status. */
+  expansionModel: SelectionModel<T> = new SelectionModel<T>(true);
 
-  /** Expansion info: the model */
-  constructor() {
-    if (this._expansionModel != null && this._expansionModel.onChange != null) {
-      this._expansionModel.onChange.subscribe((_) =>
-        this.expandChange.next(this.expansionModel.selected));
-    }
-  }
-
+  /** Toggles one single node. Expands a collapsed node or collapse an expanded node. */
   toggle(node: T) {
-    this._expansionModel.toggle(node);
-    // this.expandChange.next(this._expansionModel.selected);
+    this.expansionModel.toggle(node);
+    this.expandChange.next(this.expansionModel.selected);
   }
 
+  /** Expands one single node. */
   expand(node: T) {
-    this._expansionModel.select(node);
-    // this.expandChange.next(this._expansionModel.selected);
+    this.expansionModel.select(node);
+    this.expandChange.next(this.expansionModel.selected);
   }
 
+  /** Collapses one single node. */
   collapse(node: T) {
-    this._expansionModel.deselect(node);
-    // this.expandChange.next(this._expansionModel.selected);
+    this.expansionModel.deselect(node);
+    this.expandChange.next(this.expansionModel.selected);
   }
 
-  expanded(node: any): boolean {
-    return this._expansionModel.isSelected(node);
+  /** Whether a given node is expanded or not. Returns true if the node is expanded. */
+  expanded(node: T) {
+    return this.expansionModel.isSelected(node);
   }
 
-  expandAll() {
-    this._expansionModel.clear();
-    this.nodes.forEach((node) => {
-      node.expandable && this._expansionModel.select(node);
-    });
-    // this.expandChange.next(this._expansionModel.selected);
+  /** Toggles a subtree rooted at `node` recursively. */
+  toggleDecedents(node: T) {
+    this.expansionModel.toggle(node);
+    let expand = this.expansionModel.isSelected(node);
+    expand ? this.expandDecedents(node) : this.collapseDecedents(node);
   }
 
+  /** Collapse all nodes in the tree. */
   collapseAll() {
-    this._expansionModel.clear();
-    // this.expandChange.next(this._expansionModel.selected);
+    this.expansionModel.clear();
+    this.expandChange.next(this.expansionModel.selected);
   }
 
+  /** Expands all nodes in the tree. */
+  abstract expandAll();
+
+  /** Expands a subtree rooted at given `node` recursively. */
+  abstract expandDecedents(node: T);
+
+  /** Collapses a subtree rooted at given `node` recursively. */
+  abstract collapseDecedents(node: T);
+
+  /** Gets a list of decedent nodes of a subtree rooted at given `node` recursively. */
+  abstract getDecedents(node: T): T[];
+}
+
+/** Flat tree control. Able to expand/collapse a subtree recursively for FlatNode type. */
+export class FlatTreeControl<T extends FlatNode> extends BaseTreeControl<T> {
+  /**
+   * Gets a list of decedent nodes of a subtree rooted at given `node` recursively.
+   *
+   * To make this working, the `nodes` of the TreeControl must be set correctly.
+   */
   getDecedents(node: T) {
-    let startIndex = this.nodes.indexOf(node);
-    let results: T[] = [];
-    let i = startIndex + 1;
-    for (; i < this.nodes.length && node.level < this.nodes[i].level; i++) {
+    const startIndex = this.nodes.indexOf(node);
+    const results: T[] = [];
+    for (let i = startIndex + 1; i < this.nodes.length && node.level < this.nodes[i].level; i++) {
       results.push(this.nodes[i]);
     }
     return results;
   }
 
+  /**
+   * Expands all nodes in the tree.
+   *
+   * To make this working, the `nodes` of the TreeControl must be set correctly.
+   */
+  expandAll() {
+    this.expansionModel.clear();
+    this.nodes.forEach((node) => node.expandable && this.expansionModel.select(node));
+    this.expandChange.next(this.expansionModel.selected);
+  }
+
+  /** Expands a subtree rooted at given `node` recursively. */
   expandDecedents(node: T) {
-    console.log(`expand decedents ${node}`);
     let decedents = this.getDecedents(node);
-    decedents.forEach((child) => child.expandable && this._expansionModel.select(child));
-     // this.expandChange.next(this._expansionModel.selected);
-    console.log(this.expansionModel.selected);
+    decedents.forEach((child) => child.expandable && this.expansionModel.select(child));
+    this.expandChange.next(this.expansionModel.selected);
   }
 
+  /** Collapses a subtree rooted at given `node` recursively. */
   collapseDecedents(node: T) {
-    console.log(`collapse decedents ${node}`);
     let decedents = this.getDecedents(node);
-    decedents.forEach((child) => this._expansionModel.deselect(child));
-    // this.expandChange.next(this._expansionModel.selected);
-    console.log(this.expansionModel.selected);
-  }
-
-  toggleDecedents(node: T) {
-    console.log(`toggle decedents ${node}`);
-    this._expansionModel.toggle(node);
-    let expand = this._expansionModel.isSelected(node);
-    expand ? this.expandDecedents(node) : this.collapseDecedents(node);
-    console.log(this.expansionModel.selected);
+    decedents.forEach((child) => this.expansionModel.deselect(child));
+    this.expandChange.next(this.expansionModel.selected);
   }
 }
 
-export class NestedTreeControl<T extends NestedNode> implements TreeControl {
-  nodes: T[];
-
-  /** Expansion info: the changes */
-  expandChange = new BehaviorSubject<T[]>([]);
-
-  /** Expansion Statues */
-  set expansionModel(model: SelectionModel<T>) {
-    if (this._expansionModel != null && this._expansionModel.onChange != null) {
-      this._expansionModel.onChange.unsubscribe();
-      this._expansionModel = model;
-    }
-    if ( this._expansionModel != null && this._expansionModel.onChange != null) {
-      this._expansionModel.onChange.subscribe((_) => this.expandChange.next(this.expansionModel.selected));
-    }
-  }
-  get expansionModel(): SelectionModel<T> {
-    return this._expansionModel;
-  }
-  _expansionModel: SelectionModel<T> = new SelectionModel<T>(true);
-
-  /** Expansion info: the model */
-  constructor() {
-    if (this._expansionModel != null && this._expansionModel.onChange != null) {
-      this._expansionModel.onChange.subscribe((_) =>
-        this.expandChange.next(this.expansionModel.selected));
-    }
-  }
-
-  toggle(node: T) {
-    this.expansionModel.toggle(node);
-  }
-
-  expand(node: T) {
-    this.expansionModel.select(node);
-  }
-
-  collapse(node: T) {
-    this.expansionModel.deselect(node);
-  }
-
-  expanded(node: any) {
-    return this.expansionModel.isSelected(node);
-  }
-
+/** Nested tree control. Able to expand/collapse a subtree recursively for NestedNode type. */
+export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> {
+  /**
+   * Expands all nodes in the tree.
+   *
+   * To make this working, the `nodes` of the TreeControl must be set correctly.
+   */
   expandAll() {
     this.expansionModel.clear();
     this.nodes.forEach((node) => {
       this.expansionModel.select(node);
     });
+    this.expandChange.next(this.expansionModel.selected);
   }
 
-  collapseAll() {
-    this.expansionModel.clear();
-  }
-
-  getDecedents(node: T) {
+  /** Gets a list of decedent nodes of a subtree rooted at given `node` recursively. */
+  getDecedents(node: T): T[] {
     let decedents = [];
     this._getDecedents(decedents, node);
     return decedents;
   }
 
+  /** A helper function to get decedents recursively. */
   _getDecedents(decedents: T[], node: T) {
     decedents.push(node);
-    node.getChildren().subscribe((children: T[]) => {
+    const subscription = node.getChildren().subscribe((children: T[]) => {
       if (children) {
         children.forEach((child) => {
           this._getDecedents(decedents, child);
         });
       }
-    })
+    });
+    subscription.unsubscribe();
+    this.expandChange.next(this.expansionModel.selected);
   }
 
+  /** Expands a subtree rooted at given `node` recursively. */
   expandDecedents(node: T) {
     this.expansionModel.select(node);
-    node.getChildren().subscribe((children: T[]) => {
+    const subscription = node.getChildren().subscribe((children: T[]) => {
       if (children) {
         children.forEach((child) => {
           this.expandDecedents(child)
         });
       }
     });
+    subscription.unsubscribe();
+    this.expandChange.next(this.expansionModel.selected);
   }
 
+  /** Collapses a subtree rooted at given `node` recursively. */
   collapseDecedents(node: T) {
     this.expansionModel.deselect(node);
-    node.getChildren().subscribe((children: T[]) => {
+    const subscription = node.getChildren().subscribe((children: T[]) => {
       if (children) {
         children.forEach((child) => {
           this.collapseDecedents(child)
         });
       }
     });
-  }
-
-  toggleDecedents(node: T) {
-    this.expansionModel.toggle(node);
-    let expand = this.expansionModel.isSelected(node);
-    node.getChildren().subscribe((children: T[]) => {
-      if (children) {
-        children.forEach((child) => {
-          expand ? this.expandDecedents(child) : this.collapseDecedents(child);
-        });
-      }
-    });
+    subscription.unsubscribe();
+    this.expandChange.next(this.expansionModel.selected);
   }
 }

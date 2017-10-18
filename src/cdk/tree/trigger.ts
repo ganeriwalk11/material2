@@ -27,7 +27,7 @@ import {FlatNode, NestedNode} from './tree-data';
 })
 export class CdkNodeTrigger<T extends FlatNode|NestedNode> {
   /** Whether expand/collapse the node recursively. */
-  @Input('cdkNodeTriggerRecursive') recursive: boolean = false;
+  @Input('cdkNodeTriggerRecursive') recursive: boolean = true;
 
   constructor(@Inject(forwardRef(() => CdkTree)) private _tree: CdkTree<T>,
               private _treeNode: CdkTreeNode<T>) {}
