@@ -14,8 +14,6 @@ import {CdkTreeNode} from './node';
  * Tree control interface
  */
 export interface TreeControl {
-  /** The node data */
-  nodes: any[];
 
   /** The expansion change event */
   expandChange: BehaviorSubject<any>;
@@ -165,9 +163,7 @@ export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> 
    */
   expandAll() {
     this.expansionModel.clear();
-    this.nodes.forEach((node) => {
-      this.expansionModel.select(node);
-    });
+    this.nodes.forEach((node) => this._expandDecedents(node));
     this.expandChange.next(this.expansionModel.selected);
   }
 
@@ -178,31 +174,10 @@ export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> 
     return decedents;
   }
 
-  /** A helper function to get decedents recursively. */
-  _getDecedents(decedents: T[], node: T) {
-    decedents.push(node);
-    const subscription = node.getChildren().subscribe((children: T[]) => {
-      if (children) {
-        children.forEach((child) => {
-          this._getDecedents(decedents, child);
-        });
-      }
-    });
-    subscription.unsubscribe();
-    this.expandChange.next(this.expansionModel.selected);
-  }
 
   /** Expands a subtree rooted at given `node` recursively. */
   expandDecedents(node: T) {
-    this.expansionModel.select(node);
-    const subscription = node.getChildren().subscribe((children: T[]) => {
-      if (children) {
-        children.forEach((child) => {
-          this.expandDecedents(child)
-        });
-      }
-    });
-    subscription.unsubscribe();
+    this._expandDecedents(node);
     this.expandChange.next(this.expansionModel.selected);
   }
 
@@ -213,6 +188,33 @@ export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> 
       if (children) {
         children.forEach((child) => {
           this.collapseDecedents(child)
+        });
+      }
+    });
+    subscription.unsubscribe();
+    this.expandChange.next(this.expansionModel.selected);
+  }
+
+  /** Expands a subtree rooted at given `node` recursively without notification. */
+  protected _expandDecedents(node: T) {
+    this.expansionModel.select(node);
+    const subscription = node.getChildren().subscribe((children: T[]) => {
+      if (children) {
+        children.forEach((child) => {
+          this.expandDecedents(child)
+        });
+      }
+    });
+    subscription.unsubscribe();
+  }
+
+  /** A helper function to get decedents recursively. */
+  protected _getDecedents(decedents: T[], node: T) {
+    decedents.push(node);
+    const subscription = node.getChildren().subscribe((children: T[]) => {
+      if (children) {
+        children.forEach((child) => {
+          this._getDecedents(decedents, child);
         });
       }
     });
