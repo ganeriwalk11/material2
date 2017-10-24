@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,10 +14,10 @@ import {
   Input,
   OnDestroy,
   TemplateRef,
-  ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Subject} from 'rxjs/Subject';
+import {takeUntil} from '@angular/cdk/rxjs';
 import {FlatNode, NestedNode} from './tree-data';
 
 /** The tree node template */
@@ -42,6 +42,7 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
    */
   when: (nodeData: T, index: number) => boolean;
 
+  /** @docs-private */
   constructor(public template: TemplateRef<any>) {}
 }
 
@@ -49,7 +50,6 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
 /**
  * Tree node for CdkTree. It contains the data in the tree node.
  */
-// TODO: Role should be group for expandable ndoes
 @Component({
   selector: 'cdk-tree-node',
   exportAs: 'cdkTreeNode',
@@ -64,22 +64,18 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOption, OnDestroy {
-  /** Subscription for tree's children */
-  private _childrenSubscrition: Subscription;
+  /** Emits when the component is destroyed. */
+  private _destroyed = new Subject<void>();
 
   /** The tree node data */
   @Input('cdkNode')
   set data(v: T) {
     this._data = v;
-    if (this._childrenSubscrition) {
-      this._childrenSubscrition.unsubscribe();
-    }
     if ('level' in v) {
-      this.role = (this._data as FlatNode).expandable ? 'group' : 'treeitem';
+      this.role = (this._data as FlatNode).isExpandable() ? 'group' : 'treeitem';
     } else {
-      this._childrenSubscrition = (this._data as NestedNode).getChildren().subscribe((children) => {
-        this.role = !!children ? 'group' : 'treeitem';
-      });
+      takeUntil.call((this._data as NestedNode).getChildren(), this._destroyed)
+        .subscribe(children => this.role = children ? 'group' : 'treeitem');
     }
   }
   get data(): T { return this._data; }
@@ -87,7 +83,7 @@ export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOpt
 
 
   /** The offset top of the element. Used by CdkTree to decide the order of the nodes. [Focus] */
-  get offsetTop() {
+  protected get offsetTop() {
     return this._elementRef.nativeElement.offsetTop;
   }
 
@@ -95,17 +91,17 @@ export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOpt
    * The role of the node should be 'group' if it's an internal node,
    * and 'treeitem' if it's a leaf node.
    */
-  @Input() role: string = 'treeitem';
+    // TODO: Role should be group for expandable ndoes
+  @Input() role: 'treeitem' | 'group' = 'treeitem';
 
   constructor(private _elementRef: ElementRef) {}
 
   ngOnDestroy() {
-    if (this._childrenSubscrition) {
-      this._childrenSubscrition.unsubscribe();
-    }
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
-  /** Focuses the menu item. Implements for FocusableOptoin. */
+  /** Focuses the menu item. Implements for FocusableOption. */
   focus(): void {
     this._elementRef.nativeElement.focus();
   }

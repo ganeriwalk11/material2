@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -34,7 +34,7 @@ export class CdkNodeTrigger<T extends FlatNode|NestedNode> {
 
   _trigger(_: Event) {
     this.recursive
-        ? this._tree.treeControl.toggleDecedents(this._treeNode.data)
-        : this._tree.treeControl.toggle(this._treeNode.data);
+      ? this._tree.treeControl.toggleDescendents(this._treeNode.data)
+      : this._tree.treeControl.toggle(this._treeNode.data);
   }
 }
