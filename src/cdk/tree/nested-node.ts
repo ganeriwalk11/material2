@@ -18,7 +18,7 @@ import {Subject} from 'rxjs/Subject';
 import {takeUntil} from '@angular/cdk/rxjs';
 import {CdkTree} from './tree';
 import {NestedNode} from './tree-data';
-import {CdkNodeOutlet} from './outlet';
+import {NodeOutlet} from './outlet';
 import {CdkTreeNode} from './node';
 
 
@@ -49,11 +49,11 @@ export class CdkNestedTreeNode<T extends NestedNode> implements AfterContentInit
   /** Emits when the component is destroyed. */
   private _destroyed = new Subject<void>();
 
-  /** The children data nodes of current NestedNode They will be placed in `CdkNodeOutlet`. */
+  /** The children data nodes of current NestedNode They will be placed in `NodeOutlet`. */
   protected _children: T[];
 
   /** The children node placeholder. */
-  @ContentChildren(CdkNodeOutlet) nodeOutlet: QueryList<CdkNodeOutlet>;
+  @ContentChildren(NodeOutlet) nodeOutlet: QueryList<NodeOutlet>;
 
   constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree<T>,
               public treeNode: CdkTreeNode<T>) {}

@@ -14,13 +14,13 @@ import {CdkNodeTrigger} from './trigger';
 import {CdkTree} from './tree';
 import {CdkNodeDef, CdkTreeNode} from './node';
 import {CdkNestedTreeNode} from './nested-node';
-import {CdkNodeOutlet} from './outlet';
+import {NodeOutlet} from './outlet';
 
 const EXPORTED_DECLARATIONS = [
   CdkNestedTreeNode,
   CdkNodeDef,
   CdkNodePadding,
-  CdkNodeOutlet,
+  NodeOutlet,
   CdkNodeTrigger,
   CdkTree,
   CdkTreeNode,

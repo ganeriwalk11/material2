@@ -19,6 +19,8 @@ export class JsonFlatNode implements FlatNode {
   level: number;
   expandable: boolean;
   parentMap: boolean[];
+  getLevel() { return this.level; }
+  isExpandable() { return this.expandable; }
 }
 
 export class JsonAdapter {
@@ -52,7 +54,7 @@ export class JsonAdapter {
   }
 
   static expandFlattenedNodes(nodes: JsonFlatNode[],
-                              treeControl: TreeControl): JsonFlatNode[] {
+                              treeControl: TreeControl<JsonFlatNode>): JsonFlatNode[] {
     let results: JsonFlatNode[] = [];
     let currentExpand: boolean[] = [];
     currentExpand[0] = true;
@@ -110,6 +112,8 @@ export class JsonDataSource implements DataSource<any> {
   constructor(public treeControl: FlatTreeControl<JsonFlatNode>) {
     this._filteredData.subscribe((filteredData: JsonNode[]) => {
       this._flattenedData.next(JsonAdapter.flattenNodes(filteredData));
+      console.log(`data source set nodes`);
+      console.log(this.flattenedData);
       this.treeControl.nodes = this.flattenedData;
     });
     combineLatest([this.treeControl.expandChange, this._flattenedData]).subscribe(() => {

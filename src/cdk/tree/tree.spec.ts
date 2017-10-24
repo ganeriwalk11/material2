@@ -68,9 +68,12 @@ export class TestData implements FlatNode {
   a: string;
   b: string;
   c: string;
-  children: TestData[];
   level: number;
-  get expandable(): boolean {
+  children: TestData[];
+  getLevel(): number {
+    return this.level;
+  }
+  isExpandable(): boolean {
     return !!this.children && this.children.length > 0;
   }
 

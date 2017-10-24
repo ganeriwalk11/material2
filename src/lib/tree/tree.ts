@@ -7,10 +7,10 @@
  */
 
 import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {CDK_TREE_TEMPLATE, CdkTree, FlatNode, NestedNode} from '@angular/cdk/tree';
+import {CdkTree, FlatNode, NestedNode} from '@angular/cdk/tree';
 
 /** The template for CDK tree */
-export const MAT_TREE_TEMPLATE = `<ng-container matNodePlaceholder></ng-container>`;
+export const MAT_TREE_TEMPLATE = `<ng-container nodeOutlet></ng-container>`;
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatTree = CdkTree;
 

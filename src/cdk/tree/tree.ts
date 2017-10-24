@@ -32,7 +32,7 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {takeUntil} from 'rxjs/operator/takeUntil';
 import {Subject} from 'rxjs/Subject';
 import {CdkNodeDef, CdkTreeNode} from './node';
-import {CdkNodeOutlet} from './outlet';
+import {NodeOutlet} from './outlet';
 import {FlatNode, NestedNode} from './tree-data';
 import {TreeControl} from './control/tree-control';
 import {
@@ -48,7 +48,7 @@ import {
 @Component({
   selector: 'cdk-tree',
   exportAs: 'cdkTree',
-  template: `<ng-container cdkNodeOutlet></ng-container>`,
+  template: `<ng-container nodeOutlet></ng-container>`,
   host: {
     'class': 'cdk-tree',
     'role': 'tree',
@@ -105,7 +105,7 @@ export class CdkTree<T extends FlatNode|NestedNode> implements
     new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
   // Outlets within the tree's template where the nodes will be inserted.
-  @ViewChild(CdkNodeOutlet) _nodeOutlet: CdkNodeOutlet;
+  @ViewChild(NodeOutlet) _nodeOutlet: NodeOutlet;
 
   /** The tree node template for the tree */
   @ContentChildren(CdkNodeDef) _nodeDefs: QueryList<CdkNodeDef<T>>;

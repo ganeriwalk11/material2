@@ -11,13 +11,14 @@ import {
   Component,
   Directive,
   Input,
+  ContentChildren,
+  QueryList,
   ViewEncapsulation
 } from '@angular/core';
 import {
-  CDK_TREE_NODE_TEMPLATE,
-  CdkNestedNode,
+  CdkNestedTreeNode,
   CdkNodeDef,
-  CdkNodePlaceholder,
+  NodeOutlet,
   CdkTreeNode,
   FlatNode,
   NestedNode
@@ -27,8 +28,8 @@ import {
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatTreeNode = CdkTreeNode;
 export const _MatNodeDef = CdkNodeDef;
-export const _MatNestedNode = CdkNestedNode;
-export const _MatNodePlaceholder = CdkNodePlaceholder;
+export const _MatNestedTreeNode = CdkNestedTreeNode;
+export const _MatNodeOutlet = NodeOutlet;
 
 /**
  * Wrapper for the CdkTree node with Material design styles.
@@ -37,7 +38,7 @@ export const _MatNodePlaceholder = CdkNodePlaceholder;
   moduleId: module.id,
   selector: 'mat-tree-node',
   exportAs: 'matTreeNode',
-  template: CDK_TREE_NODE_TEMPLATE,
+  template: `<ng-content></ng-content>`,
   host: {
     '[attr.role]': 'role',
     'class': 'mat-tree-node',
@@ -50,7 +51,7 @@ export const _MatNodePlaceholder = CdkNodePlaceholder;
 })
 export class MatTreeNode<T extends FlatNode|NestedNode> extends _MatTreeNode<T> {
   @Input('matNode') data: T;
-  @Input() role: string = 'treeitem';
+  @Input() role: 'treeitem' | 'group' = 'treeitem';
 }
 
 /**
@@ -69,21 +70,12 @@ export class MatNodeDef<T extends FlatNode|NestedNode> extends _MatNodeDef<T> {
  * Wrapper for the CdkTree nested node with Material design styles.
  */
 @Directive({
-  selector: '[matNestedNode]',
+  selector: '[matNestedTreeNode]',
   host: {
-    'class': 'mat-nested-node',
+    'class': 'mat-nested-tree-node',
   },
-  providers: [{provide: CdkNestedNode, useExisting: MatNestedNode}]
+  providers: [{provide: CdkNestedTreeNode, useExisting: MatNestedTreeNode}]
 })
-export class MatNestedNode<T extends NestedNode> extends _MatNestedNode<T> {
-  @Input('matNestedNode') node: T;
+export class MatNestedTreeNode<T extends NestedNode> extends _MatNestedTreeNode<T> {
+  @Input('matNestedTreeNode') node: T;
 }
-
-/**
- * Wrapper for the CdkTree node placeholder with Material design styles.
- */
-@Directive({
-  selector: '[matNodePlaceholder]',
-  providers: [{provide: CdkNodePlaceholder, useExisting: MatNodePlaceholder}]
-})
-export class MatNodePlaceholder extends _MatNodePlaceholder { }

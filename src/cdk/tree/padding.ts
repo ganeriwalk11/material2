@@ -27,7 +27,7 @@ export class CdkNodePadding<T extends FlatNode> {
   @Input('cdkNodePadding') level: number;
 
   /** The indent for each level. */
-  @Input('cdkNodePaddingIndent') indent: number;
+  @Input('cdkNodePaddingIndent') indent: number = 28;
 
   /** The padding indent value for the tree node. Returns a string with px numbers if not null. */
   _paddingIndent() {
@@ -35,18 +35,17 @@ export class CdkNodePadding<T extends FlatNode> {
       ? this._treeNode.data.getLevel()
       : null;
     const level = this.level || nodeLevel;
-
     return level ? `${level * this.indent}px` : null;
   }
 
   /** The left padding indent value for the tree node. */
   paddingIndentLeft() {
-    this._dir.value === 'rtl' ? null : this._paddingIndent();
+    return this._dir.value === 'rtl' ? null : this._paddingIndent();
   }
 
   /** The right padding indent value for the tree node. */
   paddingIndentRight() {
-    this._dir.value === 'rtl' ? this._paddingIndent() : null;
+    return this._dir.value === 'rtl' ? this._paddingIndent() : null;
   }
 
   constructor(private _treeNode: CdkTreeNode<T>, @Optional() private _dir: Directionality) {}

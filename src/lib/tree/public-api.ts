@@ -11,7 +11,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatTree} from './tree';
-import {MatNestedNode, MatNodeDef, MatNodePlaceholder, MatTreeNode} from './node';
+import {MatNestedTreeNode, MatNodeDef, MatTreeNode} from './node';
 import {MatNodePadding} from './padding';
 import {MatNodeTrigger} from './trigger';
 
@@ -23,10 +23,9 @@ export * from './flat-data-source';
 export * from './nested-data-source';
 
 const EXPORTED_DECLARATIONS = [
-  MatNestedNode,
+  MatNestedTreeNode,
   MatNodeDef,
   MatNodePadding,
-  MatNodePlaceholder,
   MatNodeTrigger,
   MatTree,
   MatTreeNode,

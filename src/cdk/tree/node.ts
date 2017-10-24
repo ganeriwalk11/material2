@@ -20,9 +20,6 @@ import {Subject} from 'rxjs/Subject';
 import {takeUntil} from '@angular/cdk/rxjs';
 import {FlatNode, NestedNode} from './tree-data';
 
-/** The tree node template */
-export const CDK_TREE_NODE_TEMPLATE = '<ng-content cdkNodeOutlet></ng-content>';
-
 
 /**
  * Data node definition for the CdkTree.
@@ -42,6 +39,7 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
    */
   when: (nodeData: T, index: number) => boolean;
 
+
   /** @docs-private */
   constructor(public template: TemplateRef<any>) {}
 }
@@ -53,7 +51,7 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
 @Component({
   selector: 'cdk-tree-node',
   exportAs: 'cdkTreeNode',
-  template: CDK_TREE_NODE_TEMPLATE,
+  template: `<ng-content></ng-content>`,
   host: {
     '[attr.role]': 'role',
     'class': 'cdk-tree-node',

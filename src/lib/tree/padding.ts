@@ -18,7 +18,8 @@ export const _MatNodePadding = CdkNodePadding;
 @Directive({
   selector: '[matNodePadding]',
   host: {
-    '[style.padding-left]': 'paddingIndent',
+    '[style.padding-left]': 'paddingIndentLeft()',
+    '[style.padding-right]': 'paddingIndentRight()',
   },
   providers: [{provide: CdkNodePadding, useExisting: MatNodePadding}]
 })
@@ -29,5 +30,5 @@ export class MatNodePadding<T extends FlatNode> extends _MatNodePadding<T> {
   @Input('matNodePadding') level: number;
 
   /** The indent for each level. Default value is 28px. */
-  @Input('matNodePaddingIndex') indent: number = 28;
+  @Input('matNodePaddingIndent') indent: number = 28;
 }

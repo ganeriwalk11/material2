@@ -23,6 +23,7 @@ export class JsonNestedNode implements NestedNode {
 }
 
 export class JsonNestedDataSource implements DataSource<any> {
+
   dottedLineLevels = new Map<any, number[]>();
   flat: boolean = false;
 
@@ -34,10 +35,12 @@ export class JsonNestedDataSource implements DataSource<any> {
   set data(value: any) {
     let tree = this.buildJsonTree(value, 0);
     this._filteredData.next(tree);
+    console.log(`nested data source set nodes`)
+    console.log(this.filteredData);
     this.treeControl.nodes = this.filteredData;
   }
 
-  constructor(public treeControl: TreeControl) {}
+  constructor(public treeControl: TreeControl<any>) {}
 
   connect(collectionViewer: CollectionViewer): Observable<JsonNestedNode[]> {
     return combineLatest([collectionViewer.viewChange, this._filteredData])

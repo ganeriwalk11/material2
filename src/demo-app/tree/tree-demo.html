@@ -12,7 +12,7 @@
   </mat-tree-node>
 </mat-tree>
 
- ---------------------
+  ---------------------
 <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
   <mat-tree-node *matNodeDef="let node" [matNode]="node">
     <li>
@@ -21,10 +21,10 @@
   </mat-tree-node>
 
   <mat-tree-node *matNodeDef="let node; when: hasNestedChild" [matNode]="node">
-    <li matNestedNode>
+    <li matNestedTreeNode>
       <div matNodeTrigger> >> {{node.key}}</div>
       <ul [class]="nestedTreeControl.expanded(node) ? '' : 'tree-demo-invisible'">
-        <ng-container matNodePlaceholder></ng-container>
+        <ng-container nodeOutlet></ng-container>
       </ul>
     </li>
 

@@ -15,8 +15,8 @@ import {
  * inside the outlet.
  */
 @Directive({
-  selector: '[cdkNodeOutlet]'
+  selector: '[nodeOutlet]'
 })
-export class CdkNodeOutlet {
+export class NodeOutlet {
   constructor(public viewContainer: ViewContainerRef) { }
 }

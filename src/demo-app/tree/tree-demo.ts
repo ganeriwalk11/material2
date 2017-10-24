@@ -66,9 +66,18 @@ export class TreeDemo {
   _submit() {
     try {
       console.log(this.data);
-      let obj = JSON.parse(this.data);
-      this.dataSource.data = obj;
+      const obj = JSON.parse(this.data);
+      // this.dataSource.data = obj;
       this.nestedDataSource.data = obj;
+    } catch (e) {
+      console.log(e);
+    }
+
+    try {
+      console.log(this.data);
+      const obj = JSON.parse(this.data);
+      this.dataSource.data = obj;
+      // this.nestedDataSource.data = obj;
     } catch (e) {
       console.log(e);
     }
