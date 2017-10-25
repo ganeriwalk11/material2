@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export * from './control/tree-control';
+export * from './control/base-tree-control';
+export * from './control/flat-tree-control';
+export * from './control/nested-tree-control';
 export * from './nested-node';
 export * from './node';
 export * from './padding';
 export * from './outlet';
 export * from './tree';
-export * from './control/tree-control';
-export * from './control/base-tree-control';
-export * from './control/flat-tree-control';
-export * from './control/nested-tree-control';
 export * from './tree-errors';
 export * from './tree-module';
 export * from './trigger';
