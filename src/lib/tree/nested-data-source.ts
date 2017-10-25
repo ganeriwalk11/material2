@@ -1,5 +1,5 @@
 import {DataSource, CollectionViewer} from '@angular/cdk/collections';
-import {NestedNode, TreeControl} from '@angular/cdk/tree';
+import {/*NestedNode, */TreeControl} from '@angular/cdk/tree';
 import {Observable} from 'rxjs/Observable';
 import {of as ofObservable} from 'rxjs/observable/of';
 import {combineLatest} from 'rxjs/observable/combineLatest';
@@ -13,7 +13,7 @@ import 'rxjs/add/operator/map'
 
 import {JsonNode, SimpleTreeNode} from './shared-data-source';
 
-export class JsonNestedNode implements NestedNode {
+export class JsonNestedNode/* implements NestedNode*/ {
   key: string;
   value: any;
   children: JsonNestedNode[];

@@ -20,8 +20,8 @@ import {
   CdkNodeDef,
   NodeOutlet,
   CdkTreeNode,
-  FlatNode,
-  NestedNode
+  // FlatNode,
+  // NestedNode
 } from '@angular/cdk/tree';
 
 
@@ -49,8 +49,8 @@ export const _MatNodeOutlet = NodeOutlet;
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: CdkTreeNode, useExisting: MatTreeNode}]
 })
-export class MatTreeNode<T extends FlatNode|NestedNode> extends _MatTreeNode<T> {
-  @Input('matNode') data: T;
+export class MatTreeNode<T/* extends FlatNode|NestedNode*/> extends _MatTreeNode<T> {
+  @Input('matTreeNode') data: T;
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 }
 
@@ -60,14 +60,11 @@ export class MatTreeNode<T extends FlatNode|NestedNode> extends _MatTreeNode<T> 
 @Directive({
   selector: '[matNodeDef]',
   inputs: [
-    'when: matNodeDefWhen',
-    'getLevel: matNodeDefGetLevel',
-    'getChildren: matNodeDefGetChildren',
-    'isExpandable: matNodeDefIsExpandable'
+    'when: matNodeDefWhen'
   ],
   providers: [{provide: CdkNodeDef, useExisting: MatNodeDef}]
 })
-export class MatNodeDef<T extends FlatNode|NestedNode> extends _MatNodeDef<T> {
+export class MatNodeDef<T/* extends FlatNode|NestedNode*/> extends _MatNodeDef<T> {
   @Input('matNode') data: T;
 }
 
@@ -81,6 +78,6 @@ export class MatNodeDef<T extends FlatNode|NestedNode> extends _MatNodeDef<T> {
   },
   providers: [{provide: CdkNestedTreeNode, useExisting: MatNestedTreeNode}]
 })
-export class MatNestedTreeNode<T extends NestedNode> extends _MatNestedTreeNode<T> {
+export class MatNestedTreeNode<T/* extends NestedNode*/> extends _MatNestedTreeNode<T> {
   @Input('matNestedTreeNode') node: T;
 }

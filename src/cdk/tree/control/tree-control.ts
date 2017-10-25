@@ -7,6 +7,7 @@
  */
 import {SelectionModel} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {Observable} from 'rxjs/Observable';
 
 /**
  * Tree control interface. User can implement TreeControl to expand/collapse nodes in the tree.
@@ -52,4 +53,13 @@ export interface TreeControl<T> {
 
   /** Collapse a ndoe and all its descendents */
   collapseDescendents(node: T);
+
+  /** Get depth of a given node, return the level number. This is for flat tree node. */
+  readonly getLevel: (node: T) => number;
+
+  /** Whether the node is expandable. Returns true if expandable. This is for flat tree node. */
+  readonly isExpandable: (node: T) => boolean;
+
+  /** Returns an observable for a given node's children. This is for nested tree node. */
+  readonly getChildren: (node: T) => Observable<T[]>;
 }

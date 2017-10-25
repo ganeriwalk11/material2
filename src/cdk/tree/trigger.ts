@@ -14,7 +14,6 @@ import {
 } from '@angular/core';
 import {CdkTree} from './tree';
 import {CdkTreeNode} from './node';
-import {FlatNode, NestedNode} from './tree-data';
 
 /**
  * Node trigger to expand/collapse the node.
@@ -22,17 +21,17 @@ import {FlatNode, NestedNode} from './tree-data';
 @Directive({
   selector: '[cdkNodeTrigger]',
   host: {
-    '(click)': '_trigger($event)',
+    '(click)': '_trigger()',
   }
 })
-export class CdkNodeTrigger<T extends FlatNode|NestedNode> {
+export class CdkNodeTrigger<T> {
   /** Whether expand/collapse the node recursively. */
   @Input('cdkNodeTriggerRecursive') recursive: boolean = true;
 
   constructor(@Inject(forwardRef(() => CdkTree)) private _tree: CdkTree<T>,
               private _treeNode: CdkTreeNode<T>) {}
 
-  _trigger(_: Event) {
+  _trigger() {
     this.recursive
       ? this._tree.treeControl.toggleDescendents(this._treeNode.data)
       : this._tree.treeControl.toggle(this._treeNode.data);

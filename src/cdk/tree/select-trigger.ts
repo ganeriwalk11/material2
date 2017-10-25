@@ -12,7 +12,6 @@ import {
   forwardRef,
   Inject,
   Input,
-  Optional,
 } from '@angular/core';
 import {CdkTree} from './tree';
 import {CdkTreeNode} from './node';

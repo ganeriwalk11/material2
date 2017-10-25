@@ -8,9 +8,12 @@
 import {FocusableOption} from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Directive,
   ElementRef,
+  forwardRef,
+  Inject,
   Input,
   OnDestroy,
   TemplateRef,
@@ -18,7 +21,8 @@ import {
 } from '@angular/core';
 import {Subject} from 'rxjs/Subject';
 import {takeUntil} from '@angular/cdk/rxjs';
-import {FlatNode, NestedNode} from './tree-data';
+import {CdkTree} from './tree';
+import {getTreeControlFunctionsMissingError} from './tree-errors';
 
 
 /**
@@ -34,7 +38,7 @@ import {FlatNode, NestedNode} from './tree-data';
     'isExpandable: cdkNodeDefIsExpandable'
   ],
 })
-export class CdkNodeDef<T extends FlatNode|NestedNode> {
+export class CdkNodeDef<T> {
   /**
    * Function that should return true if this node template should be used for the provided node
    * data and index. If left undefined, this node will be considered the default node template to
@@ -65,27 +69,31 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOption, OnDestroy {
+export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
   /** Emits when the component is destroyed. */
   private _destroyed = new Subject<void>();
 
   /** The tree node data */
-  @Input('cdkNode')
+  @Input('cdkTreeNode')
   set data(v: T) {
     this._data = v;
-    if ((<FlatNode>v).isExpandable) {
-      this.role = (this._data as FlatNode).isExpandable() ? 'group' : 'treeitem';
+    if (this._tree.treeControl.isExpandable) {
+      this.role = this._tree.treeControl.isExpandable(this._data) ? 'group' : 'treeitem';
     } else {
-      takeUntil.call((this._data as NestedNode).getChildren(), this._destroyed)
-        .subscribe(children => this.role = children ? 'group' : 'treeitem');
+      if (!this._tree.treeControl.getChildren) {
+        throw getTreeControlFunctionsMissingError();
+      }
+      takeUntil.call(this._tree.treeControl.getChildren(this._data), this._destroyed)
+        .subscribe(children => {
+          this.role = children ? 'group' : 'treeitem';
+        });
     }
   }
   get data(): T { return this._data; }
   _data: T;
 
-
   /** The offset top of the element. Used by CdkTree to decide the order of the nodes. [Focus] */
-  protected get offsetTop() {
+  private get offsetTop() {
     return this._elementRef.nativeElement.offsetTop;
   }
 
@@ -96,7 +104,9 @@ export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOpt
     // TODO: Role should be group for expandable ndoes
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 
-  constructor(private _elementRef: ElementRef) {}
+  constructor(private _elementRef: ElementRef,
+              @Inject(forwardRef(() => CdkTree)) private _tree: CdkTree<T>,
+              private _changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnDestroy() {
     this._destroyed.next();

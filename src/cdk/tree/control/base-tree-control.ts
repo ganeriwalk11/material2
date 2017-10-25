@@ -7,11 +7,11 @@
  */
 import {SelectionModel} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {FlatNode, NestedNode} from '../tree-data';
+import {Observable} from 'rxjs/Observable';
 import {TreeControl} from './tree-control';
 
 /** Base tree control. It has basic toggle/expand/collapse operations on a single node. */
-export abstract class BaseTreeControl<T extends FlatNode|NestedNode> implements TreeControl<T> {
+export abstract class BaseTreeControl<T> implements TreeControl<T> {
   /** Saved node for `expandAll` action. */
   nodes: T[];
 
@@ -68,4 +68,13 @@ export abstract class BaseTreeControl<T extends FlatNode|NestedNode> implements 
 
   /** Gets a list of descendent nodes of a subtree rooted at given `node` recursively. */
   abstract getDescendents(node: T): T[];
+
+  /** Get depth of a given node, return the level number. This is for flat tree node. */
+  getLevel: (node: T) => number;
+
+  /** Whether the node is expandable. Returns true if expandable. This is for flat tree node. */
+  isExpandable: (node: T) => boolean;
+
+  /** Returns an observable for a given node's children. This is for nested tree node. */
+  getChildren: (node: T) => Observable<T[]>;
 }

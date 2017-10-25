@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {JsonDataSource, JsonFlatNode, JsonNestedDataSource, JsonNestedNode} from '@angular/material/tree';
 import {TreeControl, FlatTreeControl, NestedTreeControl} from '@angular/cdk/tree';
 import {SelectionModel} from '@angular/cdk/collections';
+import {of as ofObservable} from 'rxjs/observable/of';
 
 @Component({
   moduleId: module.id,
@@ -43,7 +44,7 @@ export class TreeDemo {
 
   isExpandable = (node: JsonFlatNode) => { return node.expandable; }
 
-  getChildren = (node: JsonNestedNode) => { return node.children; }
+  getChildren = (node: JsonNestedNode) => { return ofObservable(node.children); }
 
 
   selection: SelectionModel<JsonFlatNode> = new SelectionModel<JsonFlatNode>(true, []);
@@ -57,18 +58,15 @@ export class TreeDemo {
   nestedDataSource: JsonNestedDataSource;
 
   constructor() {
-    this.treeControl = new FlatTreeControl<JsonFlatNode>();
-
+    this.treeControl = new FlatTreeControl<JsonFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new JsonDataSource(this.treeControl);
 
-    this.nestedTreeControl = new NestedTreeControl<JsonNestedNode>();
+    this.nestedTreeControl = new NestedTreeControl<JsonNestedNode>(this.getChildren);
     this.nestedDataSource = new JsonNestedDataSource(this.treeControl);
   }
 
   ngAfterViewInit() {
     this._submit();
-    // this.treeControl.expandChange.next([]);
-    // this.nestedTreeControl.expandChange.next([]);
   }
 
   _submit() {

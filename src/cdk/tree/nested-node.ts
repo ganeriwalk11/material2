@@ -8,7 +8,6 @@
 import {
   AfterContentInit,
   ContentChildren,
-  ContentChild,
   Directive,
   forwardRef,
   Inject,
@@ -18,18 +17,17 @@ import {
 import {Subject} from 'rxjs/Subject';
 import {takeUntil} from '@angular/cdk/rxjs';
 import {CdkTree} from './tree';
-import {NestedNode} from './tree-data';
 import {NodeOutlet} from './outlet';
 import {CdkTreeNode} from './node';
 
 /**
- * Nested node is a child of `<cdk-tree>`. It works with `NestedNode` node type.
- * By adding `cdkNestedTreeNode` to the tree node template, children of the parent node will be added in
- * the `cdkNodeOutlet` in tree node template.
+ * Nested node is a child of `<cdk-tree>`. It works with nested tree.
+ * By adding `cdkNestedTreeNode` to the tree node template, children of the parent node will be
+ * added in the `nodeOutlet` in tree node template.
  * For example:
  *   <cdk-tree-node cdkNestedTreeNode [cdkNode]="node">
  *     tree node data: {{node.name}}
- *     <ng-template cdkNodeOutlet> </ng-template>
+ *     <ng-template nodeOutlet> </ng-template>
  *   </cdk-tree-node>
  * The children of node will be automatically added to `cdkNodeOutlet`, the result dom will be like
  * this:
@@ -44,7 +42,7 @@ import {CdkTreeNode} from './node';
 @Directive({
   selector: '[cdkNestedTreeNode]'
 })
-export class CdkNestedTreeNode<T extends NestedNode> implements AfterContentInit, OnDestroy {
+export class CdkNestedTreeNode<T> implements AfterContentInit, OnDestroy {
 
   /** Emits when the component is destroyed. */
   private _destroyed = new Subject<void>();
@@ -59,7 +57,8 @@ export class CdkNestedTreeNode<T extends NestedNode> implements AfterContentInit
               public treeNode: CdkTreeNode<T>) {}
 
   ngAfterContentInit() {
-    takeUntil.call(this.treeNode.data.getChildren(), this._destroyed).subscribe(result => {
+    takeUntil.call(this.tree.treeControl.getChildren(this.treeNode.data), this._destroyed)
+        .subscribe(result => {
       // In case when nodePlacholder is not in the DOM when children changes, save it in the node
       // and add to nodeOutlet when it's available.
       this._children = result as T[];
@@ -87,7 +86,7 @@ export class CdkNestedTreeNode<T extends NestedNode> implements AfterContentInit
 
   /** Clear the children nodes. */
   protected _clear() {
-    if (this.nodeOutlet.first.viewContainer) {
+    if (this.nodeOutlet.first) {
       this.nodeOutlet.first.viewContainer.clear();
     }
   }

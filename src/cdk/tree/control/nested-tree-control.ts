@@ -6,11 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NestedNode} from '../tree-data';
 import {BaseTreeControl} from './base-tree-control';
+import {Observable} from 'rxjs/Observable';
 
 /** Nested tree control. Able to expand/collapse a subtree recursively for NestedNode type. */
-export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> {
+export class NestedTreeControl<T> extends BaseTreeControl<T> {
+
+  /** Construct with nested tree function getChildren. */
+  constructor(public getChildren: (node: T) => Observable<T[]>) {
+    super();
+  }
+
   /**
    * Expands all nodes in the tree.
    *
@@ -32,16 +38,14 @@ export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> 
 
   /** Expands a subtree rooted at given `node` recursively. */
   expandDescendents(node: T) {
-    console.log(`expand nested node ${node} recursively`)
     this._expandDescendents(node);
-    console.log(`selected ${this.expansionModel.selected}`)
     this.expandChange.next(this.expansionModel.selected);
   }
 
   /** Collapses a subtree rooted at given `node` recursively. */
   collapseDescendents(node: T) {
     this.expansionModel.deselect(node);
-    const subscription = node.getChildren().subscribe(children => {
+    const subscription = this.getChildren(node).subscribe(children => {
       if (children) {
         children.forEach((child: T) => this.collapseDescendents(child));
       }
@@ -53,9 +57,9 @@ export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> 
   /** Expands a subtree rooted at given `node` recursively without notification. */
   protected _expandDescendents(node: T) {
     this.expansionModel.select(node);
-    const subscription = node.getChildren().subscribe(children => {
+    const subscription = this.getChildren(node).subscribe(children => {
       if (children) {
-        children.forEach((child: T) => {this.expandDescendents(child); console.log(`get result`)});
+        children.forEach((child: T) => this.expandDescendents(child));
       }
     });
     subscription.unsubscribe();
@@ -64,7 +68,7 @@ export class NestedTreeControl<T extends NestedNode> extends BaseTreeControl<T> 
   /** A helper function to get decedents recursively. */
   protected _getDescendents(decedents: T[], node: T) {
     decedents.push(node);
-    const subscription = node.getChildren().subscribe(children => {
+    const subscription = this.getChildren(node).subscribe(children => {
       if (children) {
         children.forEach((child: T) => this._getDescendents(decedents, child));
       }

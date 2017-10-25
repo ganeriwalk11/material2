@@ -15,7 +15,6 @@ export * from './control/tree-control';
 export * from './control/base-tree-control';
 export * from './control/flat-tree-control';
 export * from './control/nested-tree-control';
-export * from './tree-data';
 export * from './tree-errors';
 export * from './tree-module';
 export * from './trigger';

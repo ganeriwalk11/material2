@@ -1,7 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {CdkTree} from './tree';
-import {FlatNode, NestedNode} from './tree-data';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {Observable} from 'rxjs/Observable';
@@ -64,7 +63,7 @@ describe('CdkTree', () => {
   });
 });
 
-export class TestData implements FlatNode {
+export class TestData {
   a: string;
   b: string;
   c: string;

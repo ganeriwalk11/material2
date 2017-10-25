@@ -7,7 +7,7 @@
  */
 
 import {Directive, Input} from '@angular/core';
-import {CdkNodeTrigger, FlatNode, NestedNode} from '@angular/cdk/tree';
+import {CdkNodeTrigger/*, FlatNode, NestedNode*/} from '@angular/cdk/tree';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatNodeTrigger = CdkNodeTrigger;
@@ -22,6 +22,6 @@ export const _MatNodeTrigger = CdkNodeTrigger;
   },
   providers: [{provide: CdkNodeTrigger, useExisting: MatNodeTrigger}]
 })
-export class MatNodeTrigger<T extends FlatNode|NestedNode> extends _MatNodeTrigger<T> {
+export class MatNodeTrigger<T/* extends FlatNode|NestedNode*/> extends _MatNodeTrigger<T> {
   @Input('matNodeTriggerRecursive') recursive: boolean = true;
 }

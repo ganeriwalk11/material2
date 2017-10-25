@@ -1,5 +1,5 @@
 import {CollectionViewer, DataSource, TreeAdapter, SelectionModel} from '@angular/cdk/collections';
-import {FlatTreeControl, TreeControl, FlatNode, NestedNode} from '@angular/cdk/tree';
+import {FlatTreeControl, TreeControl/*, FlatNode, NestedNode*/} from '@angular/cdk/tree';
 import {Observable} from 'rxjs/Observable';
 import {combineLatest} from 'rxjs/observable/combineLatest';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
@@ -13,14 +13,14 @@ import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import 'rxjs/add/operator/map'
 import {JsonNode, SimpleTreeNode} from './shared-data-source';
 
-export class JsonFlatNode implements FlatNode {
+export class JsonFlatNode/* implements FlatNode*/ {
   key: string;
   value: any;
   level: number;
   expandable: boolean;
   parentMap: boolean[];
-  getLevel() { return this.level; }
-  isExpandable() { return this.expandable; }
+  // getLevel() { return this.level; }
+  // isExpandable() { return this.expandable; }
 }
 
 export class JsonAdapter {

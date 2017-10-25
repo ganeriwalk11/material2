@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FlatNode} from '../tree-data';
 import {BaseTreeControl} from './base-tree-control';
 
 /** Flat tree control. Able to expand/collapse a subtree recursively for FlatNode type. */
-export class FlatTreeControl<T extends FlatNode> extends BaseTreeControl<T> {
+export class FlatTreeControl<T> extends BaseTreeControl<T> {
+
+  /** Construct with flat tree node functions getLevel and isExpandable. */
+  constructor(public getLevel: (node: T) => number, public isExpandable: (node: T) => boolean) {
+    super();
+  }
+
   /**
    * Gets a list of descendent nodes of a subtree rooted at given `node` recursively.
    *
@@ -21,7 +26,7 @@ export class FlatTreeControl<T extends FlatNode> extends BaseTreeControl<T> {
     const results: T[] = [];
     let i = startIndex + 1;
 
-    for (;i < this.nodes.length && node.getLevel() < this.nodes[i].getLevel(); i++) {
+    for (;i < this.nodes.length && this.getLevel(node) < this.getLevel(this.nodes[i]); i++) {
       results.push(this.nodes[i]);
     }
     return results;
@@ -34,14 +39,14 @@ export class FlatTreeControl<T extends FlatNode> extends BaseTreeControl<T> {
    */
   expandAll() {
     this.expansionModel.clear();
-    this.nodes.forEach(node => node.isExpandable() && this.expansionModel.select(node));
+    this.nodes.forEach(node => this.isExpandable(node) && this.expansionModel.select(node));
     this.expandChange.next(this.expansionModel.selected);
   }
 
   /** Expands a subtree rooted at given `node` recursively. */
   expandDescendents(node: T) {
     const descendents = this.getDescendents(node);
-    descendents.forEach(child => child.isExpandable() && this.expansionModel.select(child));
+    descendents.forEach(child => this.isExpandable(child) && this.expansionModel.select(child));
     this.expandChange.next(this.expansionModel.selected);
   }
 

@@ -8,14 +8,12 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
 import {UP_ARROW, DOWN_ARROW, RIGHT_ARROW, LEFT_ARROW} from '@angular/cdk/keycodes';
-import {RxChain, debounceTime} from '@angular/cdk/rxjs';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ContentChildren,
-  ElementRef,
   Input,
   IterableDiffers,
   IterableDiffer,
@@ -33,9 +31,9 @@ import {takeUntil} from 'rxjs/operator/takeUntil';
 import {Subject} from 'rxjs/Subject';
 import {CdkNodeDef, CdkTreeNode} from './node';
 import {NodeOutlet} from './outlet';
-import {FlatNode, NestedNode} from './tree-data';
 import {TreeControl} from './control/tree-control';
 import {
+  getTreeControlMissingError,
   getTreeMissingMatchingNodeDefError,
   getTreeMultipleDefaultNodeDefsError
 } from './tree-errors';
@@ -59,7 +57,7 @@ import {
   preserveWhitespaces: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CdkTree<T extends FlatNode|NestedNode> implements
+export class CdkTree<T> implements
   CollectionViewer, AfterViewInit, OnInit, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   private _destroyed = new Subject<void>();
@@ -118,6 +116,9 @@ export class CdkTree<T extends FlatNode|NestedNode> implements
 
   ngOnInit() {
     this._dataDiffer = this._differs.find([]).create();
+    if (!this.treeControl) {
+      throw getTreeControlMissingError();
+    }
   }
 
   ngOnDestroy() {

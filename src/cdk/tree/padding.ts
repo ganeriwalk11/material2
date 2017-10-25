@@ -7,9 +7,9 @@
  */
 
 import {Directionality} from '@angular/cdk/bidi';
-import {Directive, Input, Optional} from '@angular/core';
+import {Directive, forwardRef, Inject, Input, Optional} from '@angular/core';
 import {CdkTreeNode} from './node';
-import {FlatNode} from './tree-data';
+import {CdkTree} from './tree';
 
 /**
  * Indent for the children tree nodes.
@@ -22,7 +22,7 @@ import {FlatNode} from './tree-data';
     '[style.padding-right]': 'paddingIndentRight()',
   }
 })
-export class CdkNodePadding<T extends FlatNode> {
+export class CdkNodePadding<T> {
   /** The level of depth of the tree node. The padding will be `level * indent` pixels. */
   @Input('cdkNodePadding') level: number;
 
@@ -31,8 +31,8 @@ export class CdkNodePadding<T extends FlatNode> {
 
   /** The padding indent value for the tree node. Returns a string with px numbers if not null. */
   _paddingIndent() {
-    const nodeLevel = (this._treeNode.data && this._treeNode.data.getLevel())
-      ? this._treeNode.data.getLevel()
+    const nodeLevel = (this._treeNode.data && this._tree.treeControl.getLevel)
+      ? this._tree.treeControl.getLevel(this._treeNode.data)
       : null;
     const level = this.level || nodeLevel;
     return level ? `${level * this.indent}px` : null;
@@ -49,5 +49,6 @@ export class CdkNodePadding<T extends FlatNode> {
   }
 
   constructor(private _treeNode: CdkTreeNode<T>,
+              @Inject(forwardRef(() => CdkTree)) private _tree: CdkTree<T>,
               @Optional() private _dir: Directionality) {}
 }

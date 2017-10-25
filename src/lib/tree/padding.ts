@@ -7,7 +7,7 @@
  */
 
 import {Directive, Input} from '@angular/core';
-import {CdkNodePadding, FlatNode} from '@angular/cdk/tree';
+import {CdkNodePadding/*, FlatNode*/} from '@angular/cdk/tree';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatNodePadding = CdkNodePadding;
@@ -23,7 +23,7 @@ export const _MatNodePadding = CdkNodePadding;
   },
   providers: [{provide: CdkNodePadding, useExisting: MatNodePadding}]
 })
-export class MatNodePadding<T extends FlatNode> extends _MatNodePadding<T> {
+export class MatNodePadding<T/* extends FlatNode*/> extends _MatNodePadding<T> {
   /**
    * The level of depth of the tree node. The padding will be `level * indent` pixels.
    */
