@@ -39,6 +39,13 @@ export class TreeDemo {
 }}    
 `;
 
+  getLevel = (node: JsonFlatNode) => { return node.level };
+
+  isExpandable = (node: JsonFlatNode) => { return node.expandable; }
+
+  getChildren = (node: JsonNestedNode) => { return node.children; }
+
+
   selection: SelectionModel<JsonFlatNode> = new SelectionModel<JsonFlatNode>(true, []);
 
   treeControl: FlatTreeControl<JsonFlatNode>;
@@ -51,6 +58,7 @@ export class TreeDemo {
 
   constructor() {
     this.treeControl = new FlatTreeControl<JsonFlatNode>();
+
     this.dataSource = new JsonDataSource(this.treeControl);
 
     this.nestedTreeControl = new NestedTreeControl<JsonNestedNode>();

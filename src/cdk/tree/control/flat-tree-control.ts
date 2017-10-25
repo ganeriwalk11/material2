@@ -20,7 +20,7 @@ export class FlatTreeControl<T extends FlatNode> extends BaseTreeControl<T> {
     const startIndex = this.nodes.indexOf(node);
     const results: T[] = [];
     let i = startIndex + 1;
-    console.log(this.nodes[i]);
+
     for (;i < this.nodes.length && node.getLevel() < this.nodes[i].getLevel(); i++) {
       results.push(this.nodes[i]);
     }
@@ -34,21 +34,21 @@ export class FlatTreeControl<T extends FlatNode> extends BaseTreeControl<T> {
    */
   expandAll() {
     this.expansionModel.clear();
-    this.nodes.forEach((node) => node.isExpandable() && this.expansionModel.select(node));
+    this.nodes.forEach(node => node.isExpandable() && this.expansionModel.select(node));
     this.expandChange.next(this.expansionModel.selected);
   }
 
   /** Expands a subtree rooted at given `node` recursively. */
   expandDescendents(node: T) {
     const descendents = this.getDescendents(node);
-    descendents.forEach((child) => child.isExpandable() && this.expansionModel.select(child));
+    descendents.forEach(child => child.isExpandable() && this.expansionModel.select(child));
     this.expandChange.next(this.expansionModel.selected);
   }
 
   /** Collapses a subtree rooted at given `node` recursively. */
   collapseDescendents(node: T) {
     const descendents = this.getDescendents(node);
-    descendents.forEach((child) => this.expansionModel.deselect(child));
+    descendents.forEach(child => this.expansionModel.deselect(child));
     this.expandChange.next(this.expansionModel.selected);
   }
 }

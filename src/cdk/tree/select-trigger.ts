@@ -41,7 +41,7 @@ export class CdkNodeSelectTrigger<T> {
     this.selection.toggle(this.node);
     if (this.recursive) {
       const select = this.selection.isSelected(this.node);
-      const decedents = this.tree.treeControl.getDecedents(this.node);
+      const decedents = this.tree.treeControl.getDescendents(this.node);
       decedents.forEach((child) => {
         select ? this.selection.select(child) : this.selection.deselect(child);
       });

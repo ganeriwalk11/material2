@@ -8,6 +8,7 @@
 import {
   AfterContentInit,
   ContentChildren,
+  ContentChild,
   Directive,
   forwardRef,
   Inject,
@@ -20,7 +21,6 @@ import {CdkTree} from './tree';
 import {NestedNode} from './tree-data';
 import {NodeOutlet} from './outlet';
 import {CdkTreeNode} from './node';
-
 
 /**
  * Nested node is a child of `<cdk-tree>`. It works with `NestedNode` node type.

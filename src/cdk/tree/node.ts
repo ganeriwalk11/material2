@@ -27,7 +27,12 @@ import {FlatNode, NestedNode} from './tree-data';
  */
 @Directive({
   selector: '[cdkNodeDef]',
-  inputs: ['when: cdkNodeDefWhen'],
+  inputs: [
+    'when: cdkNodeDefWhen',
+    'getLevel: cdkNodeDefGetLevel',
+    'getChildren: cdkNodeDefGetChildren',
+    'isExpandable: cdkNodeDefIsExpandable'
+  ],
 })
 export class CdkNodeDef<T extends FlatNode|NestedNode> {
   /**
@@ -38,7 +43,6 @@ export class CdkNodeDef<T extends FlatNode|NestedNode> {
    * default.
    */
   when: (nodeData: T, index: number) => boolean;
-
 
   /** @docs-private */
   constructor(public template: TemplateRef<any>) {}
@@ -69,7 +73,7 @@ export class CdkTreeNode<T extends FlatNode|NestedNode>  implements FocusableOpt
   @Input('cdkNode')
   set data(v: T) {
     this._data = v;
-    if ('level' in v) {
+    if ((<FlatNode>v).isExpandable) {
       this.role = (this._data as FlatNode).isExpandable() ? 'group' : 'treeitem';
     } else {
       takeUntil.call((this._data as NestedNode).getChildren(), this._destroyed)

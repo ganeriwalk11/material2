@@ -48,5 +48,6 @@ export class CdkNodePadding<T extends FlatNode> {
     return this._dir.value === 'rtl' ? this._paddingIndent() : null;
   }
 
-  constructor(private _treeNode: CdkTreeNode<T>, @Optional() private _dir: Directionality) {}
+  constructor(private _treeNode: CdkTreeNode<T>,
+              @Optional() private _dir: Directionality) {}
 }
