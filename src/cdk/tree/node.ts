@@ -105,7 +105,7 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 
   constructor(private _elementRef: ElementRef,
-              @Inject(forwardRef(() => CdkTree)) private _tree: CdkTree<T>,
+              private _tree: CdkTree<T>,
               private _changeDetectorRef: ChangeDetectorRef) {}
 
   ngOnDestroy() {

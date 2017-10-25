@@ -5,8 +5,8 @@
     </div>
   </mat-tree-node>
 
-  <mat-tree-node *matNodeDef="let node;when: hasChild" [matTreeNode]="node">
-    <div matNodeTrigger matNodePadding>
+  <mat-tree-node *matNodeDef="let node;when: hasChild" [matTreeNode]="node" matNodeTrigger >
+    <div matNodePadding>
       > {{node.key}} : {{node.value}}
     </div>
   </mat-tree-node>
@@ -14,15 +14,15 @@
 
     ---------------------
 <mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
-  <mat-tree-node *matNodeDef="let node" [matTreeNode]="node" role="treeitem">
+  <mat-tree-node *matNodeDef="let node" [matTreeNode]="node" role="treeitem" matNodeTrigger>
     <li>
       <div>{{node.key}}:  {{node.value}}</div>
     </li>
   </mat-tree-node>
 
-  <mat-tree-node *matNodeDef="let node; when: hasNestedChild" [matTreeNode]="node" role="group">
+  <mat-tree-node *matNodeDef="let node; when: hasNestedChild" [matTreeNode]="node" role="group" matNodeTrigger>
     <li matNestedTreeNode>
-      <div matNodeTrigger> >> {{node.key}}</div>
+      <div> >> {{node.key}}</div>
       <!--<ul [class]="nestedTreeControl.expanded(node) ? '' : 'tree-demo-invisible'">-->
       <ul *ngIf="nestedTreeControl.expanded(node)">
         <ng-container nodeOutlet></ng-container>

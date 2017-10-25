@@ -49,6 +49,6 @@ export class CdkNodePadding<T> {
   }
 
   constructor(private _treeNode: CdkTreeNode<T>,
-              @Inject(forwardRef(() => CdkTree)) private _tree: CdkTree<T>,
+              private _tree: CdkTree<T>,
               @Optional() private _dir: Directionality) {}
 }

@@ -53,7 +53,7 @@ export class CdkNestedTreeNode<T> implements AfterContentInit, OnDestroy {
   /** The children node placeholder. */
   @ContentChildren(NodeOutlet) nodeOutlet: QueryList<NodeOutlet>;
 
-  constructor(@Inject(forwardRef(() => CdkTree)) private tree: CdkTree<T>,
+  constructor(private tree: CdkTree<T>,
               public treeNode: CdkTreeNode<T>) {}
 
   ngAfterContentInit() {
