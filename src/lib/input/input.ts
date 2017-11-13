@@ -19,10 +19,9 @@ import {
   Optional,
   Self,
 } from '@angular/core';
-import {FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
-import {ErrorStateMatcher} from '@angular/material/core';
+import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
+import {ErrorStateMatcher, mixinErrorState, CanUpdateErrorState} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
-import {Subject} from 'rxjs/Subject';
 import {getMatInputUnsupportedTypeError} from './input-errors';
 import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
 
@@ -42,6 +41,15 @@ const MAT_INPUT_INVALID_TYPES = [
 
 let nextUniqueId = 0;
 
+// Boilerplate for applying mixins to MatInput.
+/** @docs-private */
+export class MatInputBase {
+  constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
+              public _parentForm: NgForm,
+              public _parentFormGroup: FormGroupDirective,
+              public ngControl: NgControl) {}
+}
+export const _MatInputMixinBase = mixinErrorState(MatInputBase);
 
 /** Directive that allows a native input to work inside a `MatFormField`. */
 @Directive({
@@ -65,7 +73,8 @@ let nextUniqueId = 0;
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
-export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy, DoCheck {
+export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<any>, OnChanges,
+    OnDestroy, DoCheck, CanUpdateErrorState {
   /** Variables used as cache for getters and setters. */
   protected _type = 'text';
   protected _disabled = false;
@@ -79,17 +88,8 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
   /** Whether the input is focused. */
   focused = false;
 
-  /** Whether the input is in an error state. */
-  errorState = false;
-
   /** The aria-describedby attribute on the input for improved a11y. */
   _ariaDescribedby: string;
-
-  /**
-   * Stream that emits whenever the state of the input changes such that the wrapping `MatFormField`
-   * needs to run change detection.
-   */
-  stateChanges = new Subject<void>();
 
   /** A name for this control that can be used by `mat-form-field`. */
   controlType = 'mat-input';
@@ -157,10 +157,11 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
   constructor(protected _elementRef: ElementRef,
               protected _platform: Platform,
               @Optional() @Self() public ngControl: NgControl,
-              @Optional() protected _parentForm: NgForm,
-              @Optional() protected _parentFormGroup: FormGroupDirective,
-              private _defaultErrorStateMatcher: ErrorStateMatcher,
+              @Optional() _parentForm: NgForm,
+              @Optional() _parentFormGroup: FormGroupDirective,
+              _defaultErrorStateMatcher: ErrorStateMatcher,
               @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any) {
+    super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
     // If no input value accessor was explicitly specified, use the element as the input value
     // accessor.
     this._inputValueAccessor = inputValueAccessor || this._elementRef.nativeElement;
@@ -200,7 +201,7 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
       // We need to re-evaluate this on every change detection cycle, because there are some
       // error triggers that we can't subscribe to (e.g. parent form submissions). This means
       // that whatever logic is in here has to be super lean or we risk destroying the performance.
-      this._updateErrorState();
+      this.updateErrorState();
     } else {
       // When the input isn't used together with `@angular/forms`, we need to check manually for
       // changes to the native `value` property in order to update the floating label.
@@ -226,20 +227,6 @@ export class MatInput implements MatFormFieldControl<any>, OnChanges, OnDestroy,
     // value changes and will not disappear.
     // Listening to the input event wouldn't be necessary when the input is using the
     // FormsModule or ReactiveFormsModule, because Angular forms also listens to input events.
-  }
-
-  /** Re-evaluates the error state. This is only relevant with @angular/forms. */
-  protected _updateErrorState() {
-    const oldState = this.errorState;
-    const parent = this._parentFormGroup || this._parentForm;
-    const matcher = this.errorStateMatcher || this._defaultErrorStateMatcher;
-    const control = this.ngControl ? this.ngControl.control as FormControl : null;
-    const newState = matcher.isErrorState(control, parent);
-
-    if (newState !== oldState) {
-      this.errorState = newState;
-      this.stateChanges.next();
-    }
   }
 
   /** Does some manual dirty checking on the native input `value` property. */
