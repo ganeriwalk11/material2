@@ -1,73 +1,74 @@
-<!--<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">&ndash;&gt;-->
-<!--<mat-tree-node *matNodeDef="let node" [matTreeNode]="node">-->
-<!--<div matNodePadding>-->
-<!--{{node.key}} : {{node.value}}-->
-<!--</div>-->
-<!--</mat-tree-node>-->
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl">-->
+  <mat-tree-node *matTreeNodeDef="let node" [matTreeNode]="node" matTreeNodeTrigger>
+    <div matTreeNodePadding>
+      {{node.key}} : {{node.value}}
+    </div>
+  </mat-tree-node>
 
-<!--<mat-tree-node *matNodeDef="let node;when: hasChild" [matTreeNode]="node" matNodeTrigger>-->
-<!--<div matNodePadding>-->
-<!--&gt; {{node.key}} : {{node.value}}-->
-<!--</div>-->
-<!--</mat-tree-node>-->
-<!--</mat-tree>-->
+  <mat-tree-node *matTreeNodeDef="let node;when: hasChild" [matTreeNode]="node" matTreeNodeTrigger>
+    <div matTreeNodePadding>
+      > {{node.key}} : {{node.value}}
+    </div>
+  </mat-tree-node>
+</mat-tree>
 
-<!-- -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
-<!--<mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">-->
-<!--<mat-tree-node *matNodeDef="let node" [matTreeNode]="node" role="treeitem" matNodeTrigger>-->
-<!--<li>-->
-<!--<div>{{node.key}}:  {{node.value}}</div>-->
-<!--</li>-->
-<!--</mat-tree-node>-->
-
-
-<!--<mat-tree-node *matNodeDef="let node; when: hasNestedChild" [matTreeNode]="node" role="group" matNodeTrigger>-->
-<!--<li matNestedTreeNode>-->
-<!--<div> >> {{node.key}}</div>-->
-<!--&lt;!&ndash;<ul [class]="nestedTreeControl.expanded(node) ? '' : 'tree-demo-invisible'">&ndash;&gt;-->
-<!--<ul *ngIf="nestedTreeControl.isExpanded(node)">-->
-<!--<ng-container nodeOutlet></ng-container>-->
-<!--</ul>-->
-<!--</li>-->
-<!--</mat-tree-node>-->
-<!--</mat-tree>-->
-
-
-<cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">-->
-  <ng-container *cdkTreeNodeDef="let node">
-    <cdk-tree-node >
-      <!--[cdkTreeNode]="node"-->
-      <div cdkTreeNodePadding> {{node.key}} : {{node.value}}</div>
-    </cdk-tree-node>
-  </ng-container>
-
-
-  <ng-container *cdkTreeNodeDef="let node; when: hasChild">
-    <cdk-tree-node cdkTreeNodeTrigger>
-      <div cdkTreeNodePadding>
-        > {{node.key}} : {{node.value}}
-      </div>
-    </cdk-tree-node>
-  </ng-container>
-</cdk-tree>
-
----------------------
-<cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
-  <cdk-nested-tree-node *cdkTreeNodeDef="let node">
-    <li >
+ ---------------------
+<mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+  <mat-tree-node *matTreeNodeDef="let node" [matTreeNode]="node" role="treeitem" matTreeNodeTrigger>
+    <li>
       <div>{{node.key}}:  {{node.value}}</div>
     </li>
-  </cdk-nested-tree-node>
+  </mat-tree-node>
 
 
-  <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild">
-    <li cdkTreeNodeTrigger>
+  <mat-tree-node *matTreeNodeDef="let node; when: hasNestedChild" [matTreeNode]="node" role="group" matTreeNodeTrigger>
+    <li matNestedTreeNode>
       <div> >> {{node.key}}</div>
-
       <ul [class]="nestedTreeControl.isExpanded(node) ? '' : 'tree-demo-invisible'">
-        <ng-container cdkTreeNodeOutlet></ng-container>
-        <!--<ul *ngIf="nestedTreeControl.isExpanded(node)">-->
+      <!--<ul >-->
+        <!--//*ngIf="nestedTreeControl.isExpanded(node)">-->
+        <ng-container matTreeNodeOutlet></ng-container>
       </ul>
     </li>
-  </cdk-nested-tree-node>
-</cdk-tree>
+  </mat-tree-node>
+</mat-tree>
+
+
+<!--<cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">&ndash;&gt;-->
+  <!--<ng-container *cdkTreeNodeDef="let node">-->
+    <!--<cdk-tree-node >-->
+      <!--&lt;!&ndash;[cdkTreeNode]="node"&ndash;&gt;-->
+      <!--<div cdkTreeNodePadding> {{node.key}} : {{node.value}}</div>-->
+    <!--</cdk-tree-node>-->
+  <!--</ng-container>-->
+
+
+  <!--<ng-container *cdkTreeNodeDef="let node; when: hasChild">-->
+    <!--<cdk-tree-node cdkTreeNodeTrigger>-->
+      <!--<div cdkTreeNodePadding>-->
+        <!--&gt; {{node.key}} : {{node.value}}-->
+      <!--</div>-->
+    <!--</cdk-tree-node>-->
+  <!--</ng-container>-->
+<!--</cdk-tree>-->
+
+<!-- -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;-->
+<!--<cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">-->
+  <!--<cdk-nested-tree-node *cdkTreeNodeDef="let node">-->
+    <!--<li >-->
+      <!--<div>{{node.key}}:  {{node.value}}</div>-->
+    <!--</li>-->
+  <!--</cdk-nested-tree-node>-->
+
+
+  <!--<cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild">-->
+    <!--<li cdkTreeNodeTrigger>-->
+      <!--<div> >> {{node.key}}</div>-->
+
+      <!--<ul [class]="nestedTreeControl.isExpanded(node) ? '' : 'tree-demo-invisible'">-->
+        <!--<ng-container cdkTreeNodeOutlet></ng-container>-->
+        <!--&lt;!&ndash;<ul *ngIf="nestedTreeControl.isExpanded(node)">&ndash;&gt;-->
+      <!--</ul>-->
+    <!--</li>-->
+  <!--</cdk-nested-tree-node>-->
+<!--</cdk-tree>-->

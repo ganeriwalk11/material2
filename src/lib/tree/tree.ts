@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
-import {CdkTree, CDK_TREE_TEMPLATE} from '@angular/cdk/tree';
+import {ChangeDetectionStrategy, Component, ViewChild, ViewEncapsulation} from '@angular/core';
+import {CdkTree} from '@angular/cdk/tree';
+import {MatTreeNodeOutlet} from './outlet';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatTree = CdkTree;
@@ -19,7 +20,7 @@ export const _MatTree = CdkTree;
   moduleId: module.id,
   selector: 'mat-tree',
   exportAs: 'matTree',
-  template: CDK_TREE_TEMPLATE,
+  template: `<ng-container matTreeNodeOutlet></ng-container>`,
   host: {
     'class': 'mat-tree',
     'role': 'tree',
@@ -32,5 +33,8 @@ export const _MatTree = CdkTree;
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{provide: CdkTree, useExisting: MatTree}]
 })
-export class MatTree<T> extends _MatTree<T> {}
+export class MatTree<T> extends _MatTree<T> {
+  // Outlets within the tree's template where the dataNodes will be inserted.
+  @ViewChild(MatTreeNodeOutlet) _nodeOutlet: MatTreeNodeOutlet;
+}
 

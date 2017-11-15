@@ -7,14 +7,17 @@
  */
 
 import {
+  ContentChildren,
   Directive,
   Input,
+  QueryList
 } from '@angular/core';
 import {
   CdkNestedTreeNode,
   CdkTreeNodeDef,
   CdkTreeNode,
 } from '@angular/cdk/tree';
+import {MatTreeNodeOutlet} from './outlet';
 
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
@@ -44,14 +47,14 @@ export class MatTreeNode<T> extends _MatTreeNode<T> {
  * Wrapper for the CdkTree node definition with Material design styles.
  */
 @Directive({
-  selector: '[matNodeDef]',
+  selector: '[matTreeNodeDef]',
   inputs: [
-    'when: matNodeDefWhen'
+    'when: matTreeNodeDefWhen'
   ],
   providers: [{provide: CdkTreeNodeDef, useExisting: MatTreeNodeDef}]
 })
 export class MatTreeNodeDef<T> extends _MatTreeNodeDef<T> {
-  @Input('matNode') data: T;
+  @Input('matTreeNode') data: T;
 }
 
 /**
@@ -66,4 +69,6 @@ export class MatTreeNodeDef<T> extends _MatTreeNodeDef<T> {
 })
 export class MatNestedTreeNode<T> extends _MatNestedTreeNode<T> {
   @Input('matNestedTreeNode') node: T;
+
+  @ContentChildren(MatTreeNodeOutlet) nodeOutlet: QueryList<MatTreeNodeOutlet>;
 }

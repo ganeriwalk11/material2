@@ -89,7 +89,15 @@ export class TreeDemo {
     }
   }
 
-  hasChild = (_nodeData: JsonFlatNode) => _nodeData.expandable;
+  hasChild = (_: number, _nodeData: JsonFlatNode) => {
+    console.log(`flat node ${_nodeData} expandable ${_nodeData.expandable}`)
+    console.log(_nodeData)
+    return _nodeData.expandable;
+  }
 
-  hasNestedChild = (nodeData: JsonNestedNode) => !(nodeData.value);
+  hasNestedChild = (_: number, nodeData: JsonNestedNode) => {
+    console.log(`nested node ${nodeData} expandable ${!(nodeData.value)}`);
+    console.log(nodeData)
+    return !(nodeData.value);
+  }
 }

@@ -23,7 +23,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Subject} from 'rxjs/Subject';
 import {CdkTreeNodeDef, CdkTreeNode, CdkTreeNodeOutletContext} from './node';
 import {CdkTreeNodeOutlet} from './outlet';
@@ -155,7 +155,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
 
   /** Set up a subscription for the data provided by the data source. */
   private _observeRenderChanges() {
-    takeUntil.call(this.dataSource.connect(this), this._destroyed)
+    this.dataSource.connect(this).pipe(takeUntil(this._destroyed))
       .subscribe(data => {
         this._data = data;
         this._renderNodeChanges(data);

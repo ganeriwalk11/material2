@@ -7,19 +7,29 @@
  */
 
 import {NgModule} from '@angular/core';
-import {MatTree} from './tree';
+
 import {CdkTreeModule} from '@angular/cdk/tree';
-import {MatNestedTreeNode, MatTreeNodeDef, MatTreeNode} from './node';
-import {MatTreeNodeTrigger} from './trigger';
-import {MatTreeNodePadding} from './padding';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
+import {MatNestedTreeNode, MatTreeNodeDef, MatTreeNode} from './node';
+import {MatTree} from './tree';
+import {MatTreeNodeTrigger} from './trigger';
+import {MatTreeNodeOutlet} from './outlet';
+import {MatTreeNodePadding} from './padding';
+
+const EXPORTED_DECLARATIONS = [
+  MatNestedTreeNode,
+  MatTreeNodeDef,
+  MatTreeNodePadding,
+  MatTreeNodeTrigger,
+  MatTree,
+  MatTreeNode,
+  MatTreeNodeOutlet,
+];
 
 @NgModule({
   imports: [CdkTreeModule, CommonModule, MatCommonModule],
-  exports: [MatTree, MatTreeNode, MatTreeNodeDef, MatNestedTreeNode,
-      MatTreeNodePadding, MatTreeNodeTrigger],
-  declarations: [MatTree, MatTreeNode, MatTreeNodeDef, MatNestedTreeNode,
-      MatTreeNodePadding, MatTreeNodeTrigger],
+  exports: EXPORTED_DECLARATIONS,
+  declarations: EXPORTED_DECLARATIONS,
 })
 export class MatTreeModule {}

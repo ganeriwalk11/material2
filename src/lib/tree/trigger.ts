@@ -16,12 +16,12 @@ export const _MatTreeNodeTrigger = CdkTreeNodeTrigger;
  * Wrapper for the CdkTree's trigger with Material design styles.
  */
 @Directive({
-  selector: '[matNodeTrigger]',
+  selector: '[matTreeNodeTrigger]',
   host: {
     '(click)': '_trigger($event)',
   },
   providers: [{provide: CdkTreeNodeTrigger, useExisting: MatTreeNodeTrigger}]
 })
 export class MatTreeNodeTrigger<T> extends _MatTreeNodeTrigger<T> {
-  @Input('matNodeTriggerRecursive') recursive: boolean = true;
+  @Input('matTreeNodeTriggerRecursive') recursive: boolean = true;
 }

@@ -10,7 +10,7 @@
     background: mat-color($background, 'card');
   }
 
-  .mat-node {
+  .mat-tree-node {
     border-bottom-color: mat-color($foreground, divider);
     color: mat-color($foreground, text);
   }
@@ -21,7 +21,7 @@
     font-family: mat-font-family($config);
   }
 
-  .mat-node {
+  .mat-tree-node {
     font-weight: mat-font-weight($config, body-1);
     font-size: mat-font-size($config, body-1);
   }

@@ -26,6 +26,15 @@ export class JsonFlatNode {
   parentMap: boolean[];
 }
 
+export class JsonNestedNode/* implements NestedNode*/ {
+  key: string;
+  value: any;
+  children: JsonNestedNode[];
+  getChildren(): Observable<JsonNestedNode[]> {
+    return ofObservable(this.children);
+  }
+}
+
 export class JsonAdapter {
 
   static flattenNodes( structuredData: JsonNode[]): JsonFlatNode[] {
@@ -184,14 +193,7 @@ export class JsonDataSource implements DataSource<any> {
 
 
 
-export class JsonNestedNode/* implements NestedNode*/ {
-  key: string;
-  value: any;
-  children: JsonNestedNode[];
-  getChildren(): Observable<JsonNestedNode[]> {
-    return ofObservable(this.children);
-  }
-}
+
 
 export class JsonNestedDataSource implements DataSource<any> {
 

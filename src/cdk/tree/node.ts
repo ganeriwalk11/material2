@@ -13,7 +13,7 @@ import {
   OnDestroy,
   TemplateRef
 } from '@angular/core';
-import {takeUntil} from 'rxjs/operators';
+import {takeUntil} from 'rxjs/operators/takeUntil';
 import {Subject} from 'rxjs/Subject';
 import {CdkTree} from './tree';
 import {getTreeControlFunctionsMissingError} from './tree-errors';
@@ -117,7 +117,7 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
       if (!this._tree.treeControl.getChildren) {
         throw getTreeControlFunctionsMissingError();
       }
-      takeUntil.call(this._tree.treeControl.getChildren(this._data), this._destroyed)
+      this._tree.treeControl.getChildren(this._data).pipe(takeUntil(this._destroyed))
         .subscribe(children => {
           this.role = children ? 'group' : 'treeitem';
         });
