@@ -19,7 +19,7 @@ import {
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
 export const _MatTreeNode = CdkTreeNode;
-export const _MatNodeDef = CdkTreeNodeDef;
+export const _MatTreeNodeDef = CdkTreeNodeDef;
 export const _MatNestedTreeNode = CdkNestedTreeNode;
 
 /**
@@ -48,9 +48,9 @@ export class MatTreeNode<T> extends _MatTreeNode<T> {
   inputs: [
     'when: matNodeDefWhen'
   ],
-  providers: [{provide: CdkTreeNodeDef, useExisting: MatNodeDef}]
+  providers: [{provide: CdkTreeNodeDef, useExisting: MatTreeNodeDef}]
 })
-export class MatNodeDef<T> extends _MatNodeDef<T> {
+export class MatTreeNodeDef<T> extends _MatTreeNodeDef<T> {
   @Input('matNode') data: T;
 }
 

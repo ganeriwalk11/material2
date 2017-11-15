@@ -10,7 +10,7 @@ import {Directive, Input} from '@angular/core';
 import {CdkTreeNodeTrigger} from '@angular/cdk/tree';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatNodeTrigger = CdkTreeNodeTrigger;
+export const _MatTreeNodeTrigger = CdkTreeNodeTrigger;
 
 /**
  * Wrapper for the CdkTree's trigger with Material design styles.
@@ -20,8 +20,8 @@ export const _MatNodeTrigger = CdkTreeNodeTrigger;
   host: {
     '(click)': '_trigger($event)',
   },
-  providers: [{provide: CdkTreeNodeTrigger, useExisting: MatNodeTrigger}]
+  providers: [{provide: CdkTreeNodeTrigger, useExisting: MatTreeNodeTrigger}]
 })
-export class MatNodeTrigger<T> extends _MatNodeTrigger<T> {
+export class MatTreeNodeTrigger<T> extends _MatTreeNodeTrigger<T> {
   @Input('matNodeTriggerRecursive') recursive: boolean = true;
 }

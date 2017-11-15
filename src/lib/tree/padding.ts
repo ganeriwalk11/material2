@@ -10,20 +10,20 @@ import {Directive, Input} from '@angular/core';
 import {CdkTreeNodePadding} from '@angular/cdk/tree';
 
 /** Workaround for https://github.com/angular/angular/issues/17849 */
-export const _MatNodePadding = CdkTreeNodePadding;
+export const _MatTreeNodePadding = CdkTreeNodePadding;
 
 /**
  * Wrapper for the CdkTree padding with Material design styles.
  */
 @Directive({
-  selector: '[matNodePadding]',
+  selector: '[matTreeNodePadding]',
   host: {
     '[style.padding-left]': 'paddingIndentLeft()',
     '[style.padding-right]': 'paddingIndentRight()',
   },
-  providers: [{provide: CdkTreeNodePadding, useExisting: MatNodePadding}]
+  providers: [{provide: CdkTreeNodePadding, useExisting: MatTreeNodePadding}]
 })
-export class MatNodePadding<T> extends _MatNodePadding<T> {
+export class MatTreeNodePadding<T> extends _MatTreeNodePadding<T> {
   /**
    * The level of depth of the tree node. The padding will be `level * indent` pixels.
    */

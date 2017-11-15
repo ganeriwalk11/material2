@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './tree-module';
+
 export * from './node';
+export * from './padding';
 export * from './tree';
+export * from './tree-module';
 export * from './trigger';
-export * from './tree-data-source';

@@ -9,13 +9,17 @@
 import {NgModule} from '@angular/core';
 import {MatTree} from './tree';
 import {CdkTreeModule} from '@angular/cdk/tree';
-import {MatNode, MatNodeDef} from './node';
+import {MatNestedTreeNode, MatTreeNodeDef, MatTreeNode} from './node';
+import {MatTreeNodeTrigger} from './trigger';
+import {MatTreeNodePadding} from './padding';
 import {CommonModule} from '@angular/common';
 import {MatCommonModule} from '@angular/material/core';
 
 @NgModule({
   imports: [CdkTreeModule, CommonModule, MatCommonModule],
-  exports: [MatTree, MatNodeDef, MatNode],
-  declarations: [MatTree, MatNodeDef, MatNode],
+  exports: [MatTree, MatTreeNode, MatTreeNodeDef, MatNestedTreeNode,
+      MatTreeNodePadding, MatTreeNodeTrigger],
+  declarations: [MatTree, MatTreeNode, MatTreeNodeDef, MatNestedTreeNode,
+      MatTreeNodePadding, MatTreeNodeTrigger],
 })
 export class MatTreeModule {}
