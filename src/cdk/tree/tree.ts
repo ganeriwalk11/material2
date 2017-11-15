@@ -191,7 +191,7 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
     if (this._nodeDefs.length == 1) { return this._nodeDefs.first; }
 
     const nodeDef =
-      this._nodeDefs.find(def => def.when && def.when(data, i)) || this._defaultNodeDef;
+      this._nodeDefs.find(def => def.when && def.when(i, data)) || this._defaultNodeDef;
     if (!nodeDef) { throw getTreeMissingMatchingNodeDefError(); }
 
     return nodeDef;

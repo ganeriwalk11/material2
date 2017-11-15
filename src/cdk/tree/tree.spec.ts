@@ -54,7 +54,7 @@ describe('CdkTree', () => {
     it('with rendered dataNodes', () => {
       const nodes = getNodes(treeElement);
 
-      expect(nodes).not.toBe(undefined);
+      expect(nodes).toBeDefined('Expect nodes to be defined');
       expect(nodes[0].classList).toContain('customNodeClass');
     });
 
