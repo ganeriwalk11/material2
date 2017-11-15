@@ -214,7 +214,9 @@ export class CdkTree<T> implements CollectionViewer, OnInit, OnDestroy {
     // Set the data to just created `CdkTreeNode`.
     // The `CdkTreeNode` created from `createEmbeddedView` will be saved in static variable
     //     `mostRecentTreeNode`. We get it from static variable and pass the node data to it.
-    CdkTreeNode.mostRecentTreeNode.data = nodeData;
+    if (CdkTreeNode.mostRecentTreeNode) {
+      CdkTreeNode.mostRecentTreeNode.data = nodeData;
+    }
 
     this._changeDetectorRef.detectChanges();
   }
