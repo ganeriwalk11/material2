@@ -344,6 +344,8 @@ export class MatChipList implements MatFormFieldControl<any>, ControlValueAccess
 
       // Check to see if we have a destroyed chip and need to refocus
       this._updateFocusForDestroyedChips();
+
+      this.stateChanges.next();
     });
   }
 

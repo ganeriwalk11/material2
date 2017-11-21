@@ -99,3 +99,7 @@ input.mat-chip-input {
   margin: $mat-chip-input-margin;
   flex: 1 0 $mat-chip-input-width;
 }
+
+.mat-form-field-type-mat-chip-list .mat-form-field-placeholder {
+  margin: $mat-chip-input-margin;
+}
